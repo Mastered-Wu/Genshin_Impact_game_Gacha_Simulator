@@ -1,0 +1,11 @@
+.worktrees/
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+*.exe
+*.obj
+*.ilk
+*.pdb
+*.log
+*.tmp
