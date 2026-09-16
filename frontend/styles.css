@@ -29,7 +29,8 @@ body {
 }
 
 button,
-select {
+select,
+input {
   font: inherit;
 }
 
@@ -183,13 +184,38 @@ h2 {
   margin-top: 18px;
 }
 
-.path-panel select {
+.path-panel select,
+.resource-editor input {
   width: 100%;
   min-height: 42px;
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0 10px;
   background: #fff;
+}
+
+.resource-panel {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.resource-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 86px;
+  gap: 10px;
+}
+
+.resource-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.resource-summary strong {
+  color: var(--ink);
 }
 
 .hidden {
@@ -337,6 +363,7 @@ h2 {
   .tabs,
   .pity-grid,
   .stats-grid,
+  .resource-editor,
   .actions {
     grid-template-columns: 1fr;
   }

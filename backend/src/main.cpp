@@ -185,6 +185,10 @@ std::string AppController::responseWithState(const std::string& prefix) const {
     out << "{" << prefix
         << "\"banners\":" << bannersArrayJson(banners_)
         << ",\"states\":" << allStatesJson(states_)
+        << ",\"resources\":{\"currency\":" << currency_
+        << ",\"wishCost\":" << wishCost_
+        << ",\"affordableWishes\":" << currency_ / wishCost_
+        << "}"
         << ",\"currentBannerId\":\"character-event\""
         << "}";
     return out.str();
@@ -203,9 +207,14 @@ std::string AppController::wishJson(const std::string& bannerId, int count) {
     if (count != 1 && count != 10) {
         return errorJson("invalid_count", "抽卡次数只能是 1 或 10");
     }
+    const int totalCost = count * wishCost_;
+    if (currency_ < totalCost) {
+        return errorJson("insufficient_currency", "资源不足，无法完成本次抽卡");
+    }
 
     // AppController 只做参数校验和状态保存，抽卡规则全部委托给 WishEngine。
     auto batch = engine_.wish(*banner, *state, count, random_);
+    currency_ -= totalCost;
     std::ostringstream results;
     results << "\"results\":[";
     for (std::size_t i = 0; i < batch.results.size(); ++i) {
@@ -216,6 +225,14 @@ std::string AppController::wishJson(const std::string& bannerId, int count) {
     }
     results << "],\"bannerId\":\"" << escapeJson(bannerId) << "\",";
     return responseWithState(results.str());
+}
+
+std::string AppController::setCurrencyJson(int currency) {
+    if (currency < 0) {
+        return errorJson("invalid_currency", "资源数量不能小于 0");
+    }
+    currency_ = currency;
+    return responseWithState("\"resourcesUpdated\":true,");
 }
 
 std::string AppController::setPathJson(const std::string& bannerId, const std::string& itemId) {
@@ -243,6 +260,7 @@ std::string AppController::resetJson() {
     for (const auto& entry : banners_) {
         states_.emplace(entry.first, WishState{});
     }
+    currency_ = 0;
     return responseWithState("\"reset\":true,");
 }
 
@@ -318,6 +336,9 @@ int main() {
         } else if (method == "POST" && path == "/api/wish") {
             response = gacha::httpResponse(200, "OK", "application/json; charset=utf-8",
                 app.wishJson(gacha::jsonStringField(body, "bannerId"), gacha::jsonIntField(body, "count").value_or(0)));
+        } else if (method == "POST" && path == "/api/resources") {
+            response = gacha::httpResponse(200, "OK", "application/json; charset=utf-8",
+                app.setCurrencyJson(gacha::jsonIntField(body, "currency").value_or(-1)));
         } else if (method == "POST" && path == "/api/path") {
             response = gacha::httpResponse(200, "OK", "application/json; charset=utf-8",
                 app.setPathJson(gacha::jsonStringField(body, "bannerId"), gacha::jsonStringField(body, "itemId")));

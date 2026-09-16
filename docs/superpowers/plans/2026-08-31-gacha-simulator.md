@@ -522,6 +522,7 @@ git commit -m "feat: add local gacha API server"
 - `character-event`、`weapon-event` 和 `standard` 的卡池标签页或选择器。
 - 武器定轨选择区域，仅在当前卡池为 `weapon-event` 时显示。
 - 保底和保底状态行。
+- 资源输入区域，按 160 资源一抽扣减并显示可抽次数。
 - `单抽` 和 `十连` 按钮。
 - 最新结果区域。
 - 历史和统计面板。
@@ -602,17 +603,19 @@ git commit -m "feat: add simulator frontend"
 
 ```powershell
 Invoke-RestMethod http://127.0.0.1:18080/api/state
+Invoke-RestMethod -Method Post -ContentType 'application/json' -Body '{"currency":1600}' http://127.0.0.1:18080/api/resources
 Invoke-RestMethod -Method Post -ContentType 'application/json' -Body '{"bannerId":"character-event","count":10}' http://127.0.0.1:18080/api/wish
 Invoke-RestMethod -Method Post -ContentType 'application/json' -Body '{"bannerId":"weapon-event","itemId":"weapon-a"}' http://127.0.0.1:18080/api/path
 ```
 
-预期：state JSON 返回卡池；wish JSON 返回 10 条结果；path JSON 返回更新后的武器状态。如果最终占位 id 不同，则返回清晰错误。
+预期：state JSON 返回卡池；resources JSON 返回资源状态；wish JSON 返回 10 条结果并扣除 1600 资源；path JSON 返回更新后的武器状态。如果最终占位 id 不同，则返回清晰错误。
 
 - [ ] **步骤 4：在浏览器中验证前端**
 
 打开 `http://127.0.0.1:18080` 并验证：
 
 - 默认加载角色卡池。
+- 输入资源数量后显示当前资源和可抽次数。
 - 单抽会新增一条最新结果和一条历史记录。
 - 十连会新增十条最新结果。
 - 武器定轨选择器只在武器卡池显示。

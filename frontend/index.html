@@ -33,6 +33,19 @@
           <select id="path-select"></select>
         </div>
 
+        <div class="resource-panel">
+          <label for="resource-input">星石数量</label>
+          <div class="resource-editor">
+            <input id="resource-input" type="number" min="0" step="1" inputmode="numeric" placeholder="输入当前资源">
+            <button id="resource-button" class="ghost-button" type="button">应用</button>
+          </div>
+          <div class="resource-summary">
+            <span>当前：<strong id="resource-balance">0</strong></span>
+            <span>可抽：<strong id="affordable-wishes">0</strong></span>
+            <span>160 / 抽</span>
+          </div>
+        </div>
+
         <div class="pity-grid">
           <div>
             <span>5 星保底</span>

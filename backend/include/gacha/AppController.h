@@ -21,6 +21,9 @@ public:
     // 执行单抽或十连。这里校验 bannerId/count，真正的抽卡规则交给 WishEngine。
     std::string wishJson(const std::string& bannerId, int count);
 
+    // 设置玩家当前资源数量。抽卡时按 160 资源一抽扣减。
+    std::string setCurrencyJson(int currency);
+
     // 设置武器定轨。只有武器活动池允许设置，变更或清空定轨时重置命定值。
     std::string setPathJson(const std::string& bannerId, const std::string& itemId);
 
@@ -35,6 +38,8 @@ private:
 
     std::map<std::string, BannerConfig> banners_;
     std::map<std::string, WishState> states_;
+    int currency_ = 0;
+    int wishCost_ = 160;
     DefaultRandom random_;
     WishEngine engine_;
 };

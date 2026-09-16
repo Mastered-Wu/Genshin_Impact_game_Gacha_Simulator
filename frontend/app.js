@@ -1,6 +1,7 @@
 const state = {
   banners: [],
   states: {},
+  resources: { currency: 0, wishCost: 160, affordableWishes: 0 },
   currentBannerId: "character-event",
   latestResults: [],
   loading: false,
@@ -51,6 +52,34 @@ async function performWish(count) {
   }
 }
 
+async function updateResources() {
+  const rawValue = $("resource-input").value.trim();
+  const currency = Number.parseInt(rawValue, 10);
+  if (!Number.isFinite(currency) || currency < 0) {
+    showMessage("请输入不小于 0 的资源数量");
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const data = await requestJson("/api/resources", {
+      method: "POST",
+      body: JSON.stringify({ currency }),
+    });
+    if (data.code) {
+      showMessage(data.error || "资源设置失败");
+      return;
+    }
+    applyServerState(data);
+    render();
+    showMessage("资源已更新");
+  } catch (error) {
+    showMessage("资源设置请求失败");
+  } finally {
+    setLoading(false);
+  }
+}
+
 async function updatePath(itemId) {
   setLoading(true);
   try {
@@ -90,6 +119,7 @@ async function resetSimulator() {
 function applyServerState(data) {
   state.banners = data.banners || state.banners;
   state.states = data.states || state.states;
+  state.resources = data.resources || state.resources;
   if (data.currentBannerId && !state.banners.some((banner) => banner.id === state.currentBannerId)) {
     state.currentBannerId = data.currentBannerId;
   }
@@ -97,12 +127,15 @@ function applyServerState(data) {
 
 function setLoading(loading) {
   state.loading = loading;
-  ["wish-one", "wish-ten", "reset-button", "path-select"].forEach((id) => {
+  ["wish-one", "wish-ten", "reset-button", "path-select", "resource-input", "resource-button"].forEach((id) => {
     const element = $(id);
     if (element) {
       element.disabled = loading;
     }
   });
+  if (!loading && state.resources) {
+    renderResources();
+  }
 }
 
 function showMessage(message) {
@@ -120,9 +153,21 @@ function currentBannerState() {
 function render() {
   renderBannerOptions();
   renderCurrentBanner();
+  renderResources();
   renderResults(state.latestResults);
   renderHistory();
   renderStats();
+}
+
+function renderResources() {
+  const currency = state.resources.currency || 0;
+  const wishCost = state.resources.wishCost || 160;
+  const affordableWishes = state.resources.affordableWishes || Math.floor(currency / wishCost);
+  $("resource-balance").textContent = currency;
+  $("affordable-wishes").textContent = affordableWishes;
+  $("resource-input").value = currency;
+  $("wish-one").disabled = state.loading || affordableWishes < 1;
+  $("wish-ten").disabled = state.loading || affordableWishes < 10;
 }
 
 function renderBannerOptions() {
@@ -278,6 +323,12 @@ function escapeHtml(value) {
 $("wish-one").addEventListener("click", () => performWish(1));
 $("wish-ten").addEventListener("click", () => performWish(10));
 $("reset-button").addEventListener("click", resetSimulator);
+$("resource-button").addEventListener("click", updateResources);
+$("resource-input").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    updateResources();
+  }
+});
 $("path-select").addEventListener("change", (event) => updatePath(event.target.value));
 
 loadState();

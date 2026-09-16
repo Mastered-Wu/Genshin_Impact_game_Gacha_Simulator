@@ -27,10 +27,28 @@ static void invalid_wish_count_returns_stable_code() {
     require(json.find("\"code\":\"invalid_count\"") != std::string::npos, "invalid count should return invalid_count");
 }
 
+static void resources_gate_wishes_and_deduct_cost() {
+    AppController app;
+
+    auto insufficient = app.wishJson("character-event", 1);
+    require(insufficient.find("\"code\":\"insufficient_currency\"") != std::string::npos, "wish without resources should fail");
+
+    auto invalid = app.setCurrencyJson(-1);
+    require(invalid.find("\"code\":\"invalid_currency\"") != std::string::npos, "negative resources should be invalid");
+
+    auto funded = app.setCurrencyJson(1600);
+    require(funded.find("\"currency\":1600") != std::string::npos, "resources should be set");
+
+    auto wished = app.wishJson("character-event", 10);
+    require(wished.find("\"results\"") != std::string::npos, "funded ten-pull should return results");
+    require(wished.find("\"currency\":0") != std::string::npos, "ten-pull should deduct 1600 resources");
+}
+
 int main() {
     try {
         default_state_contains_three_banners();
         invalid_wish_count_returns_stable_code();
+        resources_gate_wishes_and_deduct_cost();
     } catch (const std::exception& ex) {
         std::cerr << "FAIL: " << ex.what() << '\n';
         return EXIT_FAILURE;
