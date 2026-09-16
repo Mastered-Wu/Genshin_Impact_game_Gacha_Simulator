@@ -1,26 +1,26 @@
-# Gacha Simulator Design
+# 抽卡模拟器设计说明
 
-## Goal
+## 目标
 
-Build a local gacha simulator that closely models Genshin Impact-style wish mechanics while using original placeholder names and assets. The first version must be runnable from the desktop project folder, keep backend logic in C++, keep the frontend in plain HTML/CSS/JavaScript, and preserve every milestone in Git.
+构建一个本地抽卡模拟器，尽量还原《原神》风格的祈愿机制，同时使用原创的占位名称和资源。第一版必须能从桌面项目文件夹运行，后端逻辑使用 C++，前端使用纯 HTML/CSS/JavaScript，并且每个里程碑都通过 Git 保存。
 
-## Scope
+## 范围
 
-The first version includes:
+第一版包含：
 
-- Character Event Wish simulation with 5-star pity, 4-star pity, 50/50 featured guarantee, and carry-over state.
-- Weapon Event Wish simulation with 5-star pity, 4-star pity, 75/25 promotional guarantee, two featured 5-star weapons, and Epitomized Path-style fate points.
-- Standard Wish simulation with independent pity and a mixed character/weapon pool.
-- Single wish and ten-wish actions.
-- Visible pity counters, guarantee state, fate points, wish history, and summary statistics.
-- Configurable item pools stored as project files.
-- Automated tests for backend probability-state behavior.
+- 角色活动祈愿模拟：5 星保底、4 星保底、50/50 限定保底，以及状态继承。
+- 武器活动祈愿模拟：5 星保底、4 星保底、75/25 概率规则、两把限定 5 星武器，以及类似「神铸定轨」的命定值。
+- 常驻祈愿模拟：独立保底，并使用角色和武器混合卡池。
+- 单抽和十连操作。
+- 可见的保底计数、保底状态、命定值、抽卡历史和统计摘要。
+- 以项目文件形式保存的可配置物品池。
+- 针对后端概率和状态行为的自动化测试。
 
-The first version does not include user accounts, payments, live game data scraping, official art, official logos, or any networked backend beyond a local development server.
+第一版不包含用户账号、支付、实时游戏数据抓取、官方美术、官方 Logo，也不包含本地开发服务器之外的任何联网后端。
 
-## Project Structure
+## 项目结构
 
-All files serving this simulator live under `C:\Users\27415\Desktop\抽卡模拟器`.
+模拟器相关文件全部位于 `C:\Users\27415\Desktop\抽卡模拟器`。
 
 ```text
 抽卡模拟器/
@@ -44,106 +44,106 @@ All files serving this simulator live under `C:\Users\27415\Desktop\抽卡模拟
   .gitignore
 ```
 
-## Backend Architecture
+## 后端架构
 
-The C++ backend owns all wish rules and persistent session state. It exposes a small local HTTP API so the HTML frontend can call it from the browser.
+C++ 后端负责所有祈愿规则和持久化会话状态。后端暴露一个小型本地 HTTP API，供浏览器中的 HTML 前端调用。
 
-Core units:
+核心单元：
 
-- `Item`: immutable item metadata, including id, display name, rarity, kind, and featured flags.
-- `BannerConfig`: item pools and rule settings for one banner.
-- `WishState`: pity counters, guarantee flags, fate points, selected epitomized path, wish history, and aggregate statistics.
-- `RandomProvider`: injectable random source so tests can use deterministic rolls.
-- `WishEngine`: pure rule engine that consumes `BannerConfig`, `WishState`, wish count, and random rolls, then returns results plus updated state.
-- `HttpServer`: local API wrapper around the engine.
+- `Item`：不可变的物品元数据，包括 id、显示名称、稀有度、类型和是否为限定。
+- `BannerConfig`：单个卡池的物品池和规则设置。
+- `WishState`：保底计数、保底标记、命定值、已选择定轨、祈愿历史和汇总统计。
+- `RandomProvider`：可注入的随机源，方便测试使用确定性随机结果。
+- `WishEngine`：纯规则引擎，接收 `BannerConfig`、`WishState`、祈愿次数和随机结果，返回抽卡结果与更新后的状态。
+- `HttpServer`：围绕规则引擎的本地 API 包装层。
 
-The engine must not depend on the frontend or HTTP layer. Tests should target `WishEngine` directly.
+规则引擎不能依赖前端或 HTTP 层。测试应直接覆盖 `WishEngine`。
 
-## Wish Rules
+## 祈愿规则
 
-Character Event Wish:
+角色活动祈愿：
 
-- 5-star base rate is 0.6%.
-- A 5-star is guaranteed by the 90th wish since the previous 5-star.
-- 4-star or above is guaranteed by the 10th wish since the previous 4-star or above.
-- When a 5-star is hit without featured guarantee, there is a 50% chance to receive the featured 5-star character.
-- If the 5-star is not featured, the next 5-star on the character event wish is guaranteed featured.
-- Character event pity and guarantee state are independent from standard and weapon wishes.
+- 5 星基础概率为 0.6%。
+- 距离上一个 5 星后的第 90 抽必定获得 5 星。
+- 距离上一个 4 星或更高稀有度物品后的第 10 抽必定获得 4 星或以上物品。
+- 在没有限定保底时，抽中 5 星有 50% 概率获得限定 5 星角色。
+- 如果抽中的 5 星不是限定角色，则角色活动祈愿中的下一个 5 星必定为限定角色。
+- 角色活动祈愿的保底和保底状态与常驻祈愿、武器祈愿相互独立。
 
-Weapon Event Wish:
+武器活动祈愿：
 
-- 5-star base rate is 0.7%.
-- A 5-star weapon is guaranteed by the 80th wish since the previous 5-star.
-- 4-star or above is guaranteed by the 10th wish since the previous 4-star or above.
-- When a 5-star is hit without promotional guarantee, there is a 75% chance it is one of the two featured 5-star weapons.
-- If the 5-star is not promotional, the next 5-star on the weapon event wish is guaranteed promotional.
-- If an epitomized path is selected and a 5-star is not the selected weapon, gain 1 fate point.
-- Once fate points reach 2, the next 5-star is guaranteed to be the selected weapon.
-- Obtaining the selected weapon resets fate points to 0.
-- Changing or clearing the selected path resets fate points to 0.
+- 5 星基础概率为 0.7%。
+- 距离上一个 5 星后的第 80 抽必定获得 5 星武器。
+- 距离上一个 4 星或更高稀有度物品后的第 10 抽必定获得 4 星或以上物品。
+- 在没有限定保底时，抽中 5 星有 75% 概率获得两把限定 5 星武器之一。
+- 如果抽中的 5 星不是限定武器，则武器活动祈愿中的下一个 5 星必定为限定武器。
+- 如果已选择定轨目标，且获得的 5 星不是所选武器，则命定值加 1。
+- 当命定值达到 2 时，下一个 5 星必定为所选武器。
+- 获得所选武器后，命定值重置为 0。
+- 更改或清除定轨目标时，命定值重置为 0。
 
-Standard Wish:
+常驻祈愿：
 
-- 5-star base rate is 0.6%.
-- A 5-star is guaranteed by the 90th wish since the previous 5-star.
-- 4-star or above is guaranteed by the 10th wish since the previous 4-star or above.
-- There is no featured guarantee in the first version.
+- 5 星基础概率为 0.6%。
+- 距离上一个 5 星后的第 90 抽必定获得 5 星。
+- 距离上一个 4 星或更高稀有度物品后的第 10 抽必定获得 4 星或以上物品。
+- 第一版不包含限定保底。
 
-Soft pity is not required in the first version. The hard-pity and guarantee rules must be correct first; soft pity can be added later as a configurable rule.
+第一版不要求实现软保底。应先确保硬保底和保底规则正确；软保底可以之后作为可配置规则加入。
 
-## API Design
+## API 设计
 
-The local server listens on `127.0.0.1` and serves both static frontend files and JSON endpoints.
+本地服务器监听 `127.0.0.1`，同时提供静态前端文件和 JSON 接口。
 
-- `GET /api/state`: returns banner states, selected banner, pity counters, guarantees, fate points, history, and stats.
-- `POST /api/wish`: accepts `{ "bannerId": "character-event", "count": 1 }` or `{ "bannerId": "character-event", "count": 10 }`; returns wish results and updated state.
-- `POST /api/path`: accepts `{ "bannerId": "weapon-event", "itemId": "weapon-a" }` or `{ "bannerId": "weapon-event", "itemId": null }`; updates weapon path and resets fate points when changed.
-- `POST /api/reset`: resets simulator state for local testing.
+- `GET /api/state`：返回卡池状态、当前选中卡池、保底计数、保底标记、命定值、历史和统计。
+- `POST /api/wish`：接收 `{ "bannerId": "character-event", "count": 1 }` 或 `{ "bannerId": "character-event", "count": 10 }`，返回抽卡结果和更新后的状态。
+- `POST /api/path`：接收 `{ "bannerId": "weapon-event", "itemId": "weapon-a" }` 或 `{ "bannerId": "weapon-event", "itemId": null }`，更新武器定轨，并在定轨变化时重置命定值。
+- `POST /api/reset`：重置模拟器状态，便于本地测试。
 
-Errors use JSON with an `error` string and a stable `code`, such as `unknown_banner`, `invalid_count`, or `invalid_path_item`.
+错误响应使用 JSON，包含 `error` 字符串和稳定的 `code`，例如 `unknown_banner`、`invalid_count` 或 `invalid_path_item`。
 
-## Frontend Design
+## 前端设计
 
-The first screen is the usable simulator, not a landing page. It should include:
+第一屏就是可用的模拟器，而不是落地页。界面应包含：
 
-- A compact top bar with banner selector and reset action.
-- A main wish panel showing banner name, featured items, pity counters, guarantee labels, and fate points when relevant.
-- Primary controls for single wish and ten wishes.
-- A result area that shows the latest draw group with rarity styling.
-- A history panel with newest wishes first.
-- A stats panel showing total wishes, 5-star count, 4-star count, featured wins, and current pity.
+- 紧凑的顶部栏，包含卡池选择和重置操作。
+- 主祈愿面板，展示卡池名称、限定物品、保底计数、保底标签，以及相关场景下的命定值。
+- 单抽和十连的主要操作按钮。
+- 结果区域，展示最近一组抽卡结果，并按稀有度区分样式。
+- 历史面板，最新祈愿排在最前。
+- 统计面板，展示总抽数、5 星数量、4 星数量、限定胜利次数和当前保底。
 
-The frontend uses plain HTML/CSS/JavaScript and `fetch()` calls. It should remain responsive on desktop and mobile. UI labels can be Chinese because the project name and user context are Chinese.
+前端使用纯 HTML/CSS/JavaScript 和 `fetch()` 调用。界面需要兼容桌面和移动端。由于项目名称和使用语境是中文，UI 标签可以使用中文。
 
-## Data and Persistence
+## 数据与持久化
 
-Banner definitions live in `configs/banners.json`. The first implementation may keep runtime state in memory and reset when the server restarts. Saving state to disk is optional for a later version.
+卡池定义存放在 `configs/banners.json`。第一版运行状态可以只保存在内存中，服务器重启后重置。保存状态到磁盘可作为后续版本功能。
 
-The config file uses original placeholder names rather than official game item names. This avoids bundling proprietary names or assets while preserving the mechanics.
+配置文件使用原创占位名称，不使用官方游戏物品名称。这样可以在保留机制的同时，避免打包专有名称或资源。
 
-## Testing
+## 测试
 
-Backend tests must cover:
+后端测试必须覆盖：
 
-- Character event hard pity at 90.
-- Character event 50/50 loss followed by guaranteed featured 5-star.
-- 4-star hard pity at 10.
-- Weapon event hard pity at 80.
-- Weapon event 75/25 promotional guarantee after non-promotional 5-star.
-- Weapon path fate points reaching 2 and forcing the selected weapon.
-- Fate point reset after selected weapon or path change.
-- Standard wish hard pity at 90.
+- 角色活动祈愿第 90 抽硬保底。
+- 角色活动祈愿 50/50 歪掉后，下一个 5 星必定为限定。
+- 第 10 抽 4 星硬保底。
+- 武器活动祈愿第 80 抽硬保底。
+- 武器活动祈愿抽到非限定 5 星后，触发 75/25 限定保底。
+- 武器定轨命定值达到 2 后，强制获得所选武器。
+- 获得所选武器或更改定轨后，命定值重置。
+- 常驻祈愿第 90 抽硬保底。
 
-Frontend verification must cover:
+前端验证必须覆盖：
 
-- Server starts and serves the page.
-- Single wish updates result, history, and pity display.
-- Ten wishes returns ten rows.
-- Weapon path selector appears only for weapon banner.
+- 服务器能启动并提供页面。
+- 单抽会更新结果、历史和保底显示。
+- 十连会返回十条结果。
+- 武器定轨选择器只在武器卡池中显示。
 
-## Build and Run
+## 构建与运行
 
-Use CMake for the backend.
+后端使用 CMake。
 
 ```powershell
 cmake -S backend -B build
@@ -151,14 +151,14 @@ cmake --build build
 .\build\gacha_server.exe
 ```
 
-The server should print the local URL when it starts.
+服务器启动时应打印本地访问 URL。
 
-## Git Workflow
+## Git 工作流
 
-The repository starts on `main` with an empty initialization commit. Each implementation task should make a focused commit after passing its tests. Generated build outputs must stay out of Git.
+仓库从 `main` 分支和一个空初始化提交开始。每个实现任务都应在测试通过后提交一个聚焦的 commit。生成的构建产物必须排除在 Git 之外。
 
-## Open Decisions
+## 待决事项
 
-- Use a small header-only HTTP library if available locally; otherwise implement a minimal local HTTP server sufficient for the API.
-- Use deterministic random queues in tests rather than statistical tests.
-- Keep soft pity out of version 1 unless the user explicitly asks for it before implementation begins.
+- 如果本地可用，则使用小型 header-only HTTP 库；否则实现一个足够支持当前 API 的最小本地 HTTP 服务器。
+- 测试中使用确定性随机队列，而不是统计测试。
+- 除非用户在实现前明确要求，否则版本 1 不包含软保底。

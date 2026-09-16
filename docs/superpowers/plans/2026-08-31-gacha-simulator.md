@@ -1,80 +1,80 @@
-# Gacha Simulator Implementation Plan
+# 抽卡模拟器实现计划
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **给自动化开发代理的说明：** 必须使用子技能：推荐 `superpowers:subagent-driven-development`，也可以使用 `superpowers:executing-plans`，按任务逐项实现本计划。步骤使用复选框（`- [ ]`）语法进行跟踪。
 
-**Goal:** Build a local C++ plus HTML gacha simulator that models Genshin Impact-style wish mechanics with original placeholder content.
+**目标：** 构建一个本地 C++ 加 HTML 的抽卡模拟器，使用原创占位内容来模拟《原神》风格的祈愿机制。
 
-**Architecture:** The C++ backend owns all banner configuration, state, random rolls, wish rules, and JSON API responses. The frontend is plain HTML/CSS/JavaScript served by the local backend and uses `fetch()` to call the API. The rule engine is isolated from HTTP so deterministic tests can verify pity, guarantees, and fate points.
+**架构：** C++ 后端负责所有卡池配置、状态、随机结果、祈愿规则和 JSON API 响应。前端使用纯 HTML/CSS/JavaScript，由本地后端提供静态文件，并通过 `fetch()` 调用 API。规则引擎与 HTTP 层隔离，以便使用确定性测试验证保底、限定保底和命定值。
 
-**Tech Stack:** C++17, CMake, header-only single-repository code, plain HTML/CSS/JavaScript, PowerShell-friendly build commands.
+**技术栈：** C++17、CMake、单仓库 header-only 风格代码、纯 HTML/CSS/JavaScript，以及适合 PowerShell 的构建命令。
 
-**Spec:** `docs/superpowers/specs/2026-08-31-gacha-simulator-design.md`
+**规格文档：** `docs/superpowers/specs/2026-08-31-gacha-simulator-design.md`
 
-## Global Constraints
+## 全局约束
 
-- All simulator files must live under `C:\Users\27415\Desktop\抽卡模拟器`.
-- Backend logic must be C++.
-- Frontend must be plain HTML/CSS/JavaScript.
-- The first screen must be the usable simulator, not a landing page.
-- Use original placeholder names and assets, not official game item names, art, or logos.
-- Character Event Wish hard pity is 90 wishes.
-- Character Event Wish 5-star base rate is 0.6%.
-- Character Event Wish featured guarantee starts after a non-featured 5-star.
-- Weapon Event Wish hard pity is 80 wishes.
-- Weapon Event Wish 5-star base rate is 0.7%.
-- Weapon Event Wish promotional guarantee starts after a non-promotional 5-star.
-- Weapon Event Wish fate points max at 2 and force the selected weapon on the next 5-star.
-- Standard Wish hard pity is 90 wishes.
-- 4-star or above hard pity is 10 wishes for every banner.
-- Soft pity is not part of version 1.
-- Generated build outputs must stay out of Git.
-
----
-
-## File Structure
-
-- Create `.gitignore`: ignores `build/`, CMake generated files, binaries, logs, and local temporary files.
-- Create `README.md`: project purpose, build, run, test, and Git notes.
-- Create `configs/banners.json`: original placeholder banner names and item pools.
-- Create `backend/CMakeLists.txt`: builds `gacha_core_tests` and `gacha_server`.
-- Create `backend/include/gacha/Models.h`: shared item, banner, state, result, and stats structs.
-- Create `backend/include/gacha/RandomProvider.h`: deterministic and default random interfaces.
-- Create `backend/include/gacha/WishEngine.h`: public rule engine API.
-- Create `backend/src/WishEngine.cpp`: rule engine implementation.
-- Create `backend/tests/WishEngineTests.cpp`: deterministic backend tests.
-- Create `backend/include/gacha/BannerRepository.h`: built-in banner config provider.
-- Create `backend/src/BannerRepository.cpp`: placeholder config data.
-- Create `backend/include/gacha/Json.h`: JSON serialization helpers for API output.
-- Create `backend/src/Json.cpp`: minimal JSON escaping and response serialization.
-- Create `backend/src/main.cpp`: local HTTP/static file server and API router.
-- Create `frontend/index.html`: simulator shell.
-- Create `frontend/styles.css`: responsive simulator styling.
-- Create `frontend/app.js`: API calls, rendering, banner switching, wish actions.
-- Create `scripts/build.ps1`: CMake configure/build helper.
-- Create `scripts/test.ps1`: CMake configure/build/test helper.
-- Create `scripts/run.ps1`: build and start server helper.
+- 所有模拟器文件必须位于 `C:\Users\27415\Desktop\抽卡模拟器`。
+- 后端逻辑必须使用 C++。
+- 前端必须使用纯 HTML/CSS/JavaScript。
+- 第一屏必须是可用的模拟器，而不是落地页。
+- 使用原创占位名称和资源，不使用官方游戏物品名、美术或 Logo。
+- 角色活动祈愿硬保底为 90 抽。
+- 角色活动祈愿 5 星基础概率为 0.6%。
+- 角色活动祈愿在获得非限定 5 星后，进入限定保底。
+- 武器活动祈愿硬保底为 80 抽。
+- 武器活动祈愿 5 星基础概率为 0.7%。
+- 武器活动祈愿在获得非限定 5 星后，进入限定保底。
+- 武器活动祈愿命定值上限为 2，并在下一次 5 星时强制获得所选武器。
+- 常驻祈愿硬保底为 90 抽。
+- 每个卡池的 4 星或以上硬保底均为 10 抽。
+- 软保底不属于版本 1 范围。
+- 生成的构建产物必须排除在 Git 之外。
 
 ---
 
-### Task 1: Backend Wish Engine
+## 文件结构
 
-**Files:**
-- Create: `backend/CMakeLists.txt`
-- Create: `backend/include/gacha/Models.h`
-- Create: `backend/include/gacha/RandomProvider.h`
-- Create: `backend/include/gacha/WishEngine.h`
-- Create: `backend/src/WishEngine.cpp`
-- Create: `backend/tests/WishEngineTests.cpp`
+- 创建 `.gitignore`：忽略 `build/`、CMake 生成文件、二进制文件、日志和本地临时文件。
+- 创建 `README.md`：说明项目目的、构建、运行、测试和 Git 注意事项。
+- 创建 `configs/banners.json`：原创占位卡池名称和物品池。
+- 创建 `backend/CMakeLists.txt`：构建 `gacha_core_tests` 和 `gacha_server`。
+- 创建 `backend/include/gacha/Models.h`：共享的物品、卡池、状态、结果和统计结构体。
+- 创建 `backend/include/gacha/RandomProvider.h`：确定性随机和默认随机接口。
+- 创建 `backend/include/gacha/WishEngine.h`：规则引擎公开 API。
+- 创建 `backend/src/WishEngine.cpp`：规则引擎实现。
+- 创建 `backend/tests/WishEngineTests.cpp`：确定性后端测试。
+- 创建 `backend/include/gacha/BannerRepository.h`：内置卡池配置提供器。
+- 创建 `backend/src/BannerRepository.cpp`：占位配置数据。
+- 创建 `backend/include/gacha/Json.h`：API 输出的 JSON 序列化辅助函数。
+- 创建 `backend/src/Json.cpp`：最小 JSON 转义和响应序列化。
+- 创建 `backend/src/main.cpp`：本地 HTTP/静态文件服务器和 API 路由。
+- 创建 `frontend/index.html`：模拟器页面骨架。
+- 创建 `frontend/styles.css`：响应式模拟器样式。
+- 创建 `frontend/app.js`：API 调用、渲染、卡池切换和祈愿操作。
+- 创建 `scripts/build.ps1`：CMake 配置/构建辅助脚本。
+- 创建 `scripts/test.ps1`：CMake 配置/构建/测试辅助脚本。
+- 创建 `scripts/run.ps1`：构建并启动服务器的辅助脚本。
 
-**Interfaces:**
-- Produces: `gacha::WishEngine::wish(const BannerConfig&, WishState&, int count, RandomProvider&) -> WishBatch`
-- Produces: `gacha::WishState` fields `pity5`, `pity4`, `featuredGuarantee`, `promotionalGuarantee`, `fatePoints`, `selectedPathItemId`, `history`, `stats`
-- Produces: `gacha::SequenceRandom`, a deterministic random provider for tests.
-- Consumes: No earlier task output.
+---
 
-- [ ] **Step 1: Write failing tests for character and standard hard pity**
+### 任务 1：后端祈愿引擎
 
-Add tests in `backend/tests/WishEngineTests.cpp`:
+**文件：**
+- 创建：`backend/CMakeLists.txt`
+- 创建：`backend/include/gacha/Models.h`
+- 创建：`backend/include/gacha/RandomProvider.h`
+- 创建：`backend/include/gacha/WishEngine.h`
+- 创建：`backend/src/WishEngine.cpp`
+- 创建：`backend/tests/WishEngineTests.cpp`
+
+**接口：**
+- 产出：`gacha::WishEngine::wish(const BannerConfig&, WishState&, int count, RandomProvider&) -> WishBatch`
+- 产出：`gacha::WishState` 字段 `pity5`、`pity4`、`featuredGuarantee`、`promotionalGuarantee`、`fatePoints`、`selectedPathItemId`、`history`、`stats`
+- 产出：`gacha::SequenceRandom`，供测试使用的确定性随机提供器。
+- 消耗：不依赖之前任务的输出。
+
+- [ ] **步骤 1：先编写角色和常驻硬保底的失败测试**
+
+在 `backend/tests/WishEngineTests.cpp` 中添加测试：
 
 ```cpp
 #include "gacha/WishEngine.h"
@@ -157,9 +157,9 @@ int main() {
 }
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [ ] **步骤 2：运行测试，确认失败**
 
-Run:
+运行：
 
 ```powershell
 cmake -S backend -B build
@@ -167,11 +167,11 @@ cmake --build build
 .\build\gacha_core_tests.exe
 ```
 
-Expected: configure/build or test fails because engine headers and implementation do not exist.
+预期：配置、构建或测试失败，因为引擎头文件和实现尚不存在。
 
-- [ ] **Step 3: Implement core models, random provider, and minimal hard pity logic**
+- [ ] **步骤 3：实现核心模型、随机提供器和最小硬保底逻辑**
 
-Create `backend/include/gacha/Models.h`:
+创建 `backend/include/gacha/Models.h`：
 
 ```cpp
 #pragma once
@@ -239,7 +239,7 @@ struct WishBatch {
 }
 ```
 
-Create `backend/include/gacha/RandomProvider.h`:
+创建 `backend/include/gacha/RandomProvider.h`：
 
 ```cpp
 #pragma once
@@ -287,7 +287,7 @@ private:
 }
 ```
 
-Create `backend/include/gacha/WishEngine.h`:
+创建 `backend/include/gacha/WishEngine.h`：
 
 ```cpp
 #pragma once
@@ -305,9 +305,9 @@ public:
 }
 ```
 
-Create `backend/src/WishEngine.cpp` with helper selection functions and a loop that increments pity, applies hard pity, selects rarity 5/4/3, resets pity after hits, updates stats, appends history, and returns the copied state.
+创建 `backend/src/WishEngine.cpp`：包含选择辅助函数和循环逻辑。循环需要递增保底、应用硬保底、选择 5/4/3 星稀有度、在命中后重置保底、更新统计、追加历史，并返回复制后的状态。
 
-Create `backend/CMakeLists.txt`:
+创建 `backend/CMakeLists.txt`：
 
 ```cmake
 cmake_minimum_required(VERSION 3.16)
@@ -325,43 +325,9 @@ add_executable(gacha_core_tests tests/WishEngineTests.cpp)
 target_link_libraries(gacha_core_tests PRIVATE gacha_core)
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [ ] **步骤 4：运行测试，确认通过**
 
-Run:
-
-```powershell
-cmake -S backend -B build
-cmake --build build
-.\build\gacha_core_tests.exe
-```
-
-Expected: `WishEngineTests passed`.
-
-- [ ] **Step 5: Add guarantee and weapon path tests first, verify red, implement green**
-
-Extend `WishEngineTests.cpp` with tests for:
-
-- Character 50/50 loss sets `featuredGuarantee`, and the next 5-star returns the featured item.
-- 4-star hard pity returns rarity 4 or above at the 10th wish.
-- Weapon hard pity returns rarity 5 at wish 80.
-- Weapon non-promotional 5-star sets `promotionalGuarantee`, and the next 5-star is promotional.
-- Weapon selected path gains fate points for non-selected 5-stars.
-- Weapon selected path with 2 fate points forces the selected weapon and resets fate points.
-- Changing `selectedPathItemId` through direct state assignment before the next wish resets fate points only when later API task adds path endpoint; for Task 1 cover engine behavior when already at 2 fate points.
-
-Run the same build and test command after adding tests and before implementing. Expected: failing assertions for missing guarantee/path logic.
-
-Then update `WishEngine.cpp` to:
-
-- Use 50/50 roll for character featured selection.
-- Use 75/25 roll for weapon promotional selection.
-- Respect `featuredGuarantee` and `promotionalGuarantee`.
-- Respect `fatePoints >= 2` before ordinary weapon promotional selection.
-- Increment or reset fate points after weapon 5-star selection.
-
-- [ ] **Step 6: Run final backend core tests**
-
-Run:
+运行：
 
 ```powershell
 cmake -S backend -B build
@@ -369,9 +335,43 @@ cmake --build build
 .\build\gacha_core_tests.exe
 ```
 
-Expected: `WishEngineTests passed`.
+预期：输出 `WishEngineTests passed`。
 
-- [ ] **Step 7: Commit**
+- [ ] **步骤 5：先添加保底和武器定轨测试，确认红灯，再实现绿灯**
+
+扩展 `WishEngineTests.cpp`，增加以下测试：
+
+- 角色 50/50 歪掉后设置 `featuredGuarantee`，下一个 5 星返回限定物品。
+- 第 10 抽 4 星硬保底返回 4 星或以上稀有度。
+- 武器第 80 抽硬保底返回 5 星。
+- 武器抽到非限定 5 星后设置 `promotionalGuarantee`，下一个 5 星为限定。
+- 武器选择定轨后，获得非所选 5 星会增加命定值。
+- 武器定轨命定值为 2 时，强制获得所选武器并重置命定值。
+- 直接通过状态赋值更改 `selectedPathItemId` 后，下一抽时重置命定值的逻辑将在后续 API 任务添加 path 接口时覆盖；任务 1 只覆盖命定值已经为 2 时的引擎行为。
+
+添加测试后、实现前，运行同样的构建和测试命令。预期：由于缺少保底和定轨逻辑，断言失败。
+
+然后更新 `WishEngine.cpp`：
+
+- 使用 50/50 随机结果选择角色限定物品。
+- 使用 75/25 随机结果选择武器限定物品。
+- 遵守 `featuredGuarantee` 和 `promotionalGuarantee`。
+- 在普通武器限定选择前，优先处理 `fatePoints >= 2`。
+- 在武器 5 星选择后递增或重置命定值。
+
+- [ ] **步骤 6：运行最终后端核心测试**
+
+运行：
+
+```powershell
+cmake -S backend -B build
+cmake --build build
+.\build\gacha_core_tests.exe
+```
+
+预期：输出 `WishEngineTests passed`。
+
+- [ ] **步骤 7：提交**
 
 ```powershell
 git add backend
@@ -380,33 +380,33 @@ git commit -m "feat: add gacha wish engine"
 
 ---
 
-### Task 2: Config, JSON, and Local HTTP Server
+### 任务 2：配置、JSON 和本地 HTTP 服务器
 
-**Files:**
-- Create: `configs/banners.json`
-- Create: `backend/include/gacha/BannerRepository.h`
-- Create: `backend/src/BannerRepository.cpp`
-- Create: `backend/include/gacha/Json.h`
-- Create: `backend/src/Json.cpp`
-- Create: `backend/src/main.cpp`
-- Modify: `backend/CMakeLists.txt`
-- Create: `scripts/build.ps1`
-- Create: `scripts/test.ps1`
-- Create: `scripts/run.ps1`
-- Create: `.gitignore`
-- Create: `README.md`
+**文件：**
+- 创建：`configs/banners.json`
+- 创建：`backend/include/gacha/BannerRepository.h`
+- 创建：`backend/src/BannerRepository.cpp`
+- 创建：`backend/include/gacha/Json.h`
+- 创建：`backend/src/Json.cpp`
+- 创建：`backend/src/main.cpp`
+- 修改：`backend/CMakeLists.txt`
+- 创建：`scripts/build.ps1`
+- 创建：`scripts/test.ps1`
+- 创建：`scripts/run.ps1`
+- 创建：`.gitignore`
+- 创建：`README.md`
 
-**Interfaces:**
-- Consumes: `WishEngine::wish`, `BannerConfig`, `WishState`, `DefaultRandom`
-- Produces: executable `gacha_server`
-- Produces: endpoints `GET /api/state`, `POST /api/wish`, `POST /api/path`, `POST /api/reset`
-- Produces: static serving for `/`, `/styles.css`, `/app.js`
+**接口：**
+- 消耗：`WishEngine::wish`、`BannerConfig`、`WishState`、`DefaultRandom`
+- 产出：可执行文件 `gacha_server`
+- 产出：接口 `GET /api/state`、`POST /api/wish`、`POST /api/path`、`POST /api/reset`
+- 产出：为 `/`、`/styles.css`、`/app.js` 提供静态文件服务
 
-- [ ] **Step 1: Write failing API smoke test**
+- [ ] **步骤 1：编写失败的 API 冒烟测试**
 
-Create `backend/tests/ApiSmokeTests.cpp` that links server helpers without opening a socket. Test JSON output from a default app state includes all three banner ids and that invalid wish count returns `invalid_count`.
+创建 `backend/tests/ApiSmokeTests.cpp`，链接服务器辅助逻辑但不打开 socket。测试默认应用状态的 JSON 输出包含三个卡池 id，并测试非法抽卡次数返回 `invalid_count`。
 
-Expected core helper signatures:
+预期核心辅助接口：
 
 ```cpp
 namespace gacha {
@@ -420,9 +420,9 @@ public:
 }
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [ ] **步骤 2：运行测试，确认失败**
 
-Run:
+运行：
 
 ```powershell
 cmake -S backend -B build
@@ -430,21 +430,21 @@ cmake --build build
 .\build\api_smoke_tests.exe
 ```
 
-Expected: build fails because `AppController` and JSON helpers do not exist.
+预期：构建失败，因为 `AppController` 和 JSON 辅助函数尚不存在。
 
-- [ ] **Step 3: Implement banner repository and JSON helpers**
+- [ ] **步骤 3：实现卡池仓库和 JSON 辅助函数**
 
-Use original Chinese placeholder names in built-in configs:
+在内置配置中使用原创中文占位名：
 
-- Character banner id `character-event`, featured 5-star `星辉旅人`.
-- Weapon banner id `weapon-event`, featured 5-star weapons `苍曜长弓` and `赤砂法杖`.
-- Standard banner id `standard`, no featured items.
+- 角色卡池 id 为 `character-event`，限定 5 星为 `星辉旅人`。
+- 武器卡池 id 为 `weapon-event`，限定 5 星武器为 `苍曜长弓` 和 `赤砂法杖`。
+- 常驻卡池 id 为 `standard`，无任何限定物品。
 
-Also create `configs/banners.json` with matching ids and names for human-readable project data, even if the first backend uses built-in data.
+同时创建 `configs/banners.json`，使用匹配的 id 和名称，作为便于人工查看的项目数据；即使第一版后端使用内置数据，也要保留该配置文件。
 
-- [ ] **Step 4: Implement AppController and local HTTP server**
+- [ ] **步骤 4：实现 AppController 和本地 HTTP 服务器**
 
-`AppController` owns:
+`AppController` 拥有：
 
 ```cpp
 std::map<std::string, BannerConfig> banners_;
@@ -453,18 +453,18 @@ DefaultRandom random_;
 WishEngine engine_;
 ```
 
-Behavior:
+行为：
 
-- `stateJson()` returns all banners and all current states.
-- `wishJson()` accepts only count `1` or `10`; otherwise returns JSON containing `"code":"invalid_count"`.
-- `setPathJson()` accepts only weapon banner and item ids among promotional 5-star weapons; changing or clearing path resets fate points.
-- `resetJson()` resets all states to defaults.
+- `stateJson()` 返回所有卡池和当前所有状态。
+- `wishJson()` 只接受抽卡次数 `1` 或 `10`；否则返回包含 `"code":"invalid_count"` 的 JSON。
+- `setPathJson()` 只接受武器卡池，以及限定 5 星武器中的物品 id；更改或清除定轨会重置命定值。
+- `resetJson()` 将所有状态重置为默认值。
 
-`main.cpp` should serve static files from `../frontend` when run from the repository root or from paths relative to the executable when possible. It should print `http://127.0.0.1:18080` on startup.
+`main.cpp` 应在从仓库根目录运行时，或从可执行文件相对路径运行时，提供 `../frontend` 下的静态文件。启动时应打印 `http://127.0.0.1:18080`。
 
-- [ ] **Step 5: Update CMake and scripts**
+- [ ] **步骤 5：更新 CMake 和脚本**
 
-Add executables:
+添加可执行目标：
 
 ```cmake
 add_executable(api_smoke_tests tests/ApiSmokeTests.cpp src/BannerRepository.cpp src/Json.cpp src/main.cpp)
@@ -475,11 +475,11 @@ add_executable(gacha_server src/BannerRepository.cpp src/Json.cpp src/main.cpp)
 target_link_libraries(gacha_server PRIVATE gacha_core)
 ```
 
-Ensure `main()` is excluded when `GACHA_TESTING` is defined.
+确保定义 `GACHA_TESTING` 时排除 `main()`。
 
-- [ ] **Step 6: Run API tests**
+- [ ] **步骤 6：运行 API 测试**
 
-Run:
+运行：
 
 ```powershell
 cmake -S backend -B build
@@ -487,9 +487,9 @@ cmake --build build
 .\build\api_smoke_tests.exe
 ```
 
-Expected: API smoke tests pass.
+预期：API 冒烟测试通过。
 
-- [ ] **Step 7: Commit**
+- [ ] **步骤 7：提交**
 
 ```powershell
 git add .gitignore README.md backend configs scripts
@@ -498,34 +498,34 @@ git commit -m "feat: add local gacha API server"
 
 ---
 
-### Task 3: Frontend Simulator UI
+### 任务 3：前端模拟器界面
 
-**Files:**
-- Create: `frontend/index.html`
-- Create: `frontend/styles.css`
-- Create: `frontend/app.js`
-- Modify: `README.md`
+**文件：**
+- 创建：`frontend/index.html`
+- 创建：`frontend/styles.css`
+- 创建：`frontend/app.js`
+- 修改：`README.md`
 
-**Interfaces:**
-- Consumes: `GET /api/state`
-- Consumes: `POST /api/wish`
-- Consumes: `POST /api/path`
-- Consumes: `POST /api/reset`
-- Produces: usable browser simulator in Chinese.
+**接口：**
+- 消耗：`GET /api/state`
+- 消耗：`POST /api/wish`
+- 消耗：`POST /api/path`
+- 消耗：`POST /api/reset`
+- 产出：可在浏览器中使用的中文模拟器。
 
-- [ ] **Step 1: Create frontend files with API-driven UI**
+- [ ] **步骤 1：创建由 API 驱动的前端文件**
 
-Build `index.html` with:
+构建 `index.html`，包含：
 
-- Header title `抽卡模拟器`.
-- Banner tabs/select for `character-event`, `weapon-event`, and `standard`.
-- Weapon path selector area hidden unless current banner is `weapon-event`.
-- Pity and guarantee status row.
-- Buttons `单抽` and `十连`.
-- Latest results region.
-- History and stats panels.
+- 标题 `抽卡模拟器`。
+- `character-event`、`weapon-event` 和 `standard` 的卡池标签页或选择器。
+- 武器定轨选择区域，仅在当前卡池为 `weapon-event` 时显示。
+- 保底和保底状态行。
+- `单抽` 和 `十连` 按钮。
+- 最新结果区域。
+- 历史和统计面板。
 
-Build `app.js` with functions:
+构建 `app.js`，包含以下函数：
 
 ```javascript
 async function loadState()
@@ -540,11 +540,11 @@ function renderHistory()
 function renderStats()
 ```
 
-Build `styles.css` with responsive layout, stable button sizes, rarity-specific styles, and no external assets.
+构建 `styles.css`，包含响应式布局、稳定的按钮尺寸、稀有度样式，并且不使用外部资源。
 
-- [ ] **Step 2: Manually verify static file presence**
+- [ ] **步骤 2：手动验证静态文件存在**
 
-Run:
+运行：
 
 ```powershell
 Test-Path frontend/index.html
@@ -552,9 +552,9 @@ Test-Path frontend/styles.css
 Test-Path frontend/app.js
 ```
 
-Expected: all three output `True`.
+预期：三条命令均输出 `True`。
 
-- [ ] **Step 3: Commit**
+- [ ] **步骤 3：提交**
 
 ```powershell
 git add frontend README.md
@@ -563,41 +563,41 @@ git commit -m "feat: add simulator frontend"
 
 ---
 
-### Task 4: End-to-End Verification and Polish
+### 任务 4：端到端验证和打磨
 
-**Files:**
-- Modify as needed: `backend/src/main.cpp`
-- Modify as needed: `frontend/app.js`
-- Modify as needed: `frontend/styles.css`
-- Modify as needed: `README.md`
+**文件：**
+- 按需修改：`backend/src/main.cpp`
+- 按需修改：`frontend/app.js`
+- 按需修改：`frontend/styles.css`
+- 按需修改：`README.md`
 
-**Interfaces:**
-- Consumes: server executable and frontend files from earlier tasks.
-- Produces: verified local run instructions and final clean Git state.
+**接口：**
+- 消耗：前面任务产出的服务器可执行文件和前端文件。
+- 产出：已验证的本地运行说明和最终干净的 Git 状态。
 
-- [ ] **Step 1: Run full backend test suite**
+- [ ] **步骤 1：运行完整后端测试套件**
 
-Run:
+运行：
 
 ```powershell
 .\scripts\test.ps1
 ```
 
-Expected: `WishEngineTests passed` and `ApiSmokeTests passed`.
+预期：输出 `WishEngineTests passed` 和 `ApiSmokeTests passed`。
 
-- [ ] **Step 2: Start local server**
+- [ ] **步骤 2：启动本地服务器**
 
-Run:
+运行：
 
 ```powershell
 .\scripts\run.ps1
 ```
 
-Expected: console prints `http://127.0.0.1:18080`.
+预期：控制台打印 `http://127.0.0.1:18080`。
 
-- [ ] **Step 3: Verify API endpoints**
+- [ ] **步骤 3：验证 API 接口**
 
-In a second shell, run:
+在第二个 shell 中运行：
 
 ```powershell
 Invoke-RestMethod http://127.0.0.1:18080/api/state
@@ -605,23 +605,23 @@ Invoke-RestMethod -Method Post -ContentType 'application/json' -Body '{"bannerId
 Invoke-RestMethod -Method Post -ContentType 'application/json' -Body '{"bannerId":"weapon-event","itemId":"weapon-a"}' http://127.0.0.1:18080/api/path
 ```
 
-Expected: state JSON returns banners; wish JSON returns 10 results; path JSON returns updated weapon state or a clear error if the id differs from the final placeholder id.
+预期：state JSON 返回卡池；wish JSON 返回 10 条结果；path JSON 返回更新后的武器状态。如果最终占位 id 不同，则返回清晰错误。
 
-- [ ] **Step 4: Verify frontend in browser**
+- [ ] **步骤 4：在浏览器中验证前端**
 
-Open `http://127.0.0.1:18080` and verify:
+打开 `http://127.0.0.1:18080` 并验证：
 
-- Character banner loads by default.
-- Single wish adds one latest result and one history row.
-- Ten wishes adds ten latest results.
-- Weapon path selector appears only for the weapon banner.
-- Reset clears counters and history.
+- 默认加载角色卡池。
+- 单抽会新增一条最新结果和一条历史记录。
+- 十连会新增十条最新结果。
+- 武器定轨选择器只在武器卡池显示。
+- 重置会清空计数器和历史。
 
-- [ ] **Step 5: Fix only integration defects found by verification**
+- [ ] **步骤 5：只修复验证中发现的集成缺陷**
 
-For each defect, first add or update the smallest backend test when the defect is backend-observable. Then run the failing test, implement the fix, and re-run the test.
+对于每个缺陷，如果该缺陷能通过后端测试观察到，应先添加或更新最小后端测试。随后运行失败测试、实现修复，再重新运行测试。
 
-- [ ] **Step 6: Commit final polish if files changed**
+- [ ] **步骤 6：如果有文件变化，提交最终打磨**
 
 ```powershell
 git status --short
@@ -629,11 +629,11 @@ git add backend frontend README.md scripts
 git commit -m "fix: polish simulator integration"
 ```
 
-Skip the commit only if `git status --short` is empty.
+如果 `git status --short` 为空，则跳过提交。
 
-- [ ] **Step 7: Final verification**
+- [ ] **步骤 7：最终验证**
 
-Run:
+运行：
 
 ```powershell
 .\scripts\test.ps1
@@ -641,4 +641,4 @@ git status --short --branch
 git log --oneline --decorate -5
 ```
 
-Expected: tests pass, status is clean on the implementation branch, and recent commits show each milestone.
+预期：测试通过，当前实现分支状态干净，最近提交展示各个里程碑。

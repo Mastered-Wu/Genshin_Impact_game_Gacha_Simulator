@@ -3,7 +3,17 @@ build/
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
+compile_commands.json
+Testing/
+.vs/
+.vscode/
+out/
+dist/
 *.exe
+*.dll
+*.lib
+*.a
+*.o
 *.obj
 *.ilk
 *.pdb
