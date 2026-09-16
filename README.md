@@ -23,14 +23,34 @@
 
 ## 运行
 
+推荐安装后台自启：
+
+```powershell
+.\scripts\install-autostart.ps1
+```
+
+安装后，Windows 登录时会自动启动本地服务。之后直接在浏览器打开：
+
+```text
+http://127.0.0.1:18080
+```
+
+如果只想本次后台启动：
+
+```powershell
+.\scripts\start-background.ps1
+```
+
+如果想在前台查看服务日志：
+
 ```powershell
 .\scripts\run.ps1
 ```
 
-启动后打开：
+停止后台服务：
 
-```text
-http://127.0.0.1:18080
+```powershell
+.\scripts\stop-server.ps1
 ```
 
 ## API
