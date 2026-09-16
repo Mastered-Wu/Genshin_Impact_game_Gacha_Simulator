@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>抽卡模拟器</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <h1>抽卡模拟器</h1>
+        <p id="banner-subtitle">本地规则模拟</p>
+      </div>
+      <button id="reset-button" class="ghost-button" type="button">重置</button>
+    </header>
+
+    <nav id="banner-tabs" class="tabs" aria-label="卡池选择"></nav>
+
+    <section class="wish-layout">
+      <section class="wish-panel" aria-labelledby="current-banner-name">
+        <div class="banner-heading">
+          <div>
+            <h2 id="current-banner-name">加载中</h2>
+            <p id="featured-line">读取卡池配置...</p>
+          </div>
+          <div id="guarantee-badge" class="badge">保底状态</div>
+        </div>
+
+        <div id="path-panel" class="path-panel hidden">
+          <label for="path-select">武器定轨</label>
+          <select id="path-select"></select>
+        </div>
+
+        <div class="pity-grid">
+          <div>
+            <span>5 星保底</span>
+            <strong id="pity5">0 / 90</strong>
+          </div>
+          <div>
+            <span>4 星保底</span>
+            <strong id="pity4">0 / 10</strong>
+          </div>
+          <div id="fate-tile">
+            <span>命定值</span>
+            <strong id="fate-points">0 / 2</strong>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="wish-one" class="primary-button" type="button">单抽</button>
+          <button id="wish-ten" class="primary-button" type="button">十连</button>
+        </div>
+
+        <div id="message" class="message" role="status"></div>
+      </section>
+
+      <section class="results-panel" aria-labelledby="results-title">
+        <div class="section-head">
+          <h2 id="results-title">最新结果</h2>
+          <span id="result-count">0 条</span>
+        </div>
+        <div id="results" class="results empty">暂无结果</div>
+      </section>
+    </section>
+
+    <section class="dashboard">
+      <section class="stats-panel" aria-labelledby="stats-title">
+        <h2 id="stats-title">统计</h2>
+        <div id="stats" class="stats-grid"></div>
+      </section>
+
+      <section class="history-panel" aria-labelledby="history-title">
+        <div class="section-head">
+          <h2 id="history-title">历史</h2>
+          <span id="history-count">0 条</span>
+        </div>
+        <div id="history" class="history-list empty">暂无历史</div>
+      </section>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
