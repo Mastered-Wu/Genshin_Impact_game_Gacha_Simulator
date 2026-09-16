@@ -15,3 +15,15 @@ endif()
 
 add_executable(gacha_core_tests tests/WishEngineTests.cpp)
 target_link_libraries(gacha_core_tests PRIVATE gacha_core)
+
+add_executable(api_smoke_tests tests/ApiSmokeTests.cpp src/BannerRepository.cpp src/Json.cpp src/main.cpp)
+target_compile_definitions(api_smoke_tests PRIVATE GACHA_TESTING=1)
+target_link_libraries(api_smoke_tests PRIVATE gacha_core)
+
+add_executable(gacha_server src/BannerRepository.cpp src/Json.cpp src/main.cpp)
+target_link_libraries(gacha_server PRIVATE gacha_core)
+
+if (WIN32)
+    target_link_libraries(api_smoke_tests PRIVATE ws2_32)
+    target_link_libraries(gacha_server PRIVATE ws2_32)
+endif()

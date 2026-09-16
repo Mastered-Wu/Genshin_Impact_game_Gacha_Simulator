@@ -1,0 +1,66 @@
+{
+  "banners": [
+    {
+      "id": "character-event",
+      "name": "星辉同行",
+      "type": "character-event",
+      "fiveStarBaseRate": 0.006,
+      "fiveStarHardPity": 90,
+      "fourStarBaseRate": 0.051,
+      "fourStarHardPity": 10,
+      "items": [
+        { "id": "featured-hero", "name": "星辉旅人", "rarity": 5, "kind": "character", "featured": true },
+        { "id": "standard-hero-a", "name": "晴岚术士", "rarity": 5, "kind": "character" },
+        { "id": "standard-hero-b", "name": "霜镜学者", "rarity": 5, "kind": "character" },
+        { "id": "featured-four-a", "name": "巡夜弓手", "rarity": 4, "kind": "character", "featured": true },
+        { "id": "featured-four-b", "name": "织焰乐师", "rarity": 4, "kind": "character", "featured": true },
+        { "id": "standard-four-weapon", "name": "铁影大剑", "rarity": 4, "kind": "weapon" },
+        { "id": "three-sword", "name": "训练长剑", "rarity": 3, "kind": "weapon" },
+        { "id": "three-bow", "name": "旧式猎弓", "rarity": 3, "kind": "weapon" },
+        { "id": "three-catalyst", "name": "学徒法器", "rarity": 3, "kind": "weapon" }
+      ]
+    },
+    {
+      "id": "weapon-event",
+      "name": "辉铸兵装",
+      "type": "weapon-event",
+      "fiveStarBaseRate": 0.007,
+      "fiveStarHardPity": 80,
+      "fourStarBaseRate": 0.06,
+      "fourStarHardPity": 10,
+      "items": [
+        { "id": "weapon-a", "name": "苍曜长弓", "rarity": 5, "kind": "weapon", "promotional": true },
+        { "id": "weapon-b", "name": "赤砂法杖", "rarity": 5, "kind": "weapon", "promotional": true },
+        { "id": "weapon-standard-a", "name": "白银阔刃", "rarity": 5, "kind": "weapon" },
+        { "id": "weapon-standard-b", "name": "潮音长枪", "rarity": 5, "kind": "weapon" },
+        { "id": "weapon-four-a", "name": "鸣砂短剑", "rarity": 4, "kind": "weapon" },
+        { "id": "weapon-four-b", "name": "夜航弩", "rarity": 4, "kind": "weapon" },
+        { "id": "three-sword", "name": "训练长剑", "rarity": 3, "kind": "weapon" },
+        { "id": "three-bow", "name": "旧式猎弓", "rarity": 3, "kind": "weapon" },
+        { "id": "three-catalyst", "name": "学徒法器", "rarity": 3, "kind": "weapon" }
+      ]
+    },
+    {
+      "id": "standard",
+      "name": "常驻星轨",
+      "type": "standard",
+      "fiveStarBaseRate": 0.006,
+      "fiveStarHardPity": 90,
+      "fourStarBaseRate": 0.051,
+      "fourStarHardPity": 10,
+      "items": [
+        { "id": "standard-hero-a", "name": "晴岚术士", "rarity": 5, "kind": "character" },
+        { "id": "standard-hero-b", "name": "霜镜学者", "rarity": 5, "kind": "character" },
+        { "id": "standard-hero-c", "name": "松庭守卫", "rarity": 5, "kind": "character" },
+        { "id": "weapon-standard-a", "name": "白银阔刃", "rarity": 5, "kind": "weapon" },
+        { "id": "weapon-standard-b", "name": "潮音长枪", "rarity": 5, "kind": "weapon" },
+        { "id": "standard-four-hero", "name": "逐风医师", "rarity": 4, "kind": "character" },
+        { "id": "standard-four-weapon", "name": "铁影大剑", "rarity": 4, "kind": "weapon" },
+        { "id": "weapon-four-a", "name": "鸣砂短剑", "rarity": 4, "kind": "weapon" },
+        { "id": "three-sword", "name": "训练长剑", "rarity": 3, "kind": "weapon" },
+        { "id": "three-bow", "name": "旧式猎弓", "rarity": 3, "kind": "weapon" },
+        { "id": "three-catalyst", "name": "学徒法器", "rarity": 3, "kind": "weapon" }
+      ]
+    }
+  ]
+}
