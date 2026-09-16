@@ -9,13 +9,22 @@
 
 namespace gacha {
 
+// AppController 是 HTTP 层和规则引擎之间的应用状态门面。
+// 它持有所有卡池配置、每个卡池的独立状态，并把操作结果序列化成 JSON。
 class AppController {
 public:
     AppController();
 
+    // 返回完整页面状态：卡池列表、所有卡池状态和默认当前卡池。
     std::string stateJson() const;
+
+    // 执行单抽或十连。这里校验 bannerId/count，真正的抽卡规则交给 WishEngine。
     std::string wishJson(const std::string& bannerId, int count);
+
+    // 设置武器定轨。只有武器活动池允许设置，变更或清空定轨时重置命定值。
     std::string setPathJson(const std::string& bannerId, const std::string& itemId);
+
+    // 重置所有卡池的运行状态，配置不变。
     std::string resetJson();
 
 private:

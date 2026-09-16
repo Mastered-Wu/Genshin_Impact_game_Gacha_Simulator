@@ -7,6 +7,7 @@
 namespace gacha {
 namespace {
 
+// 按稀有度筛选物品池，供 5/4/3 星结果选择使用。
 std::vector<Item> filterItems(const BannerConfig& banner, int rarity) {
     std::vector<Item> items;
     for (const auto& item : banner.items) {
@@ -17,6 +18,7 @@ std::vector<Item> filterItems(const BannerConfig& banner, int rarity) {
     return items;
 }
 
+// 按稀有度和限定标记筛选。角色活动池用 featured，武器活动池的普通 5 星也会走这里。
 std::vector<Item> filterItems(const BannerConfig& banner, int rarity, bool featured, bool promotional) {
     std::vector<Item> items;
     for (const auto& item : banner.items) {
@@ -27,6 +29,7 @@ std::vector<Item> filterItems(const BannerConfig& banner, int rarity, bool featu
     return items;
 }
 
+// 武器活动池的两把限定 5 星使用 promotional 标记，和角色活动的 featured 分开。
 std::vector<Item> promotionalFiveStars(const BannerConfig& banner) {
     std::vector<Item> items;
     for (const auto& item : banner.items) {
@@ -37,6 +40,7 @@ std::vector<Item> promotionalFiveStars(const BannerConfig& banner) {
     return items;
 }
 
+// 从候选物品中随机挑一个。随机值乘以候选数量得到下标，边界值做一次保护。
 Item chooseFrom(const std::vector<Item>& items, RandomProvider& random) {
     if (items.empty()) {
         throw std::runtime_error("banner item pool is empty for requested rarity");
@@ -51,6 +55,7 @@ Item chooseFrom(const std::vector<Item>& items, RandomProvider& random) {
     return items[index];
 }
 
+// 根据定轨 id 找到指定武器。走到这里说明前置 API 已经校验过 id，异常只防御坏状态。
 Item chooseById(const BannerConfig& banner, const std::string& id) {
     auto found = std::find_if(banner.items.begin(), banner.items.end(), [&](const Item& item) {
         return item.id == id;
@@ -61,17 +66,23 @@ Item chooseById(const BannerConfig& banner, const std::string& id) {
     return *found;
 }
 
+// 处理“已经确定本抽是 5 星之后”的具体归属。
+// 这里集中实现角色 50/50、角色限定保底、武器 75/25、武器限定保底和命定值强制。
 Item chooseFiveStar(const BannerConfig& banner, WishState& state, RandomProvider& random, bool& usedGuarantee) {
     usedGuarantee = false;
 
     if (banner.type == BannerType::CharacterEvent) {
         auto featured = filterItems(banner, 5, true, false);
         auto standard = filterItems(banner, 5, false, false);
+
+        // 角色池如果上一个 5 星歪了，本次 5 星直接给限定并清除保底标记。
         if (state.featuredGuarantee) {
             usedGuarantee = true;
             state.featuredGuarantee = false;
             return chooseFrom(featured, random);
         }
+
+        // 无保底时走 50/50：赢则限定，输则常驻并设置下次限定保底。
         if (random.nextDouble() < 0.5) {
             state.featuredGuarantee = false;
             return chooseFrom(featured, random);
@@ -86,24 +97,29 @@ Item chooseFiveStar(const BannerConfig& banner, WishState& state, RandomProvider
         Item selected;
         bool hasSelected = !state.selectedPathItemId.empty();
 
+        // 武器定轨优先级最高：命定值达到 2 后，下一个 5 星强制给所选武器。
         if (hasSelected && state.fatePoints >= 2) {
             usedGuarantee = true;
             selected = chooseById(banner, state.selectedPathItemId);
         } else if (state.promotionalGuarantee) {
+            // 上一个 5 星如果是非限定，本次 5 星必定进入两把限定武器池。
             usedGuarantee = true;
             selected = chooseFrom(promotional, random);
         } else if (random.nextDouble() < 0.75) {
+            // 无限定保底时，75% 概率进入两把限定武器池，25% 概率进入常驻 5 星武器池。
             selected = chooseFrom(promotional, random);
         } else {
             selected = chooseFrom(standard, random);
         }
 
+        // 抽到非限定 5 星后设置“下个 5 星必限定”；抽到限定后清除这个标记。
         if (selected.promotional) {
             state.promotionalGuarantee = false;
         } else {
             state.promotionalGuarantee = true;
         }
 
+        // 如果有定轨，任何非所选 5 星都会增加命定值；获得所选武器后命定值清零。
         if (hasSelected) {
             if (selected.id == state.selectedPathItemId) {
                 state.fatePoints = 0;
@@ -139,6 +155,7 @@ WishBatch WishEngine::wish(const BannerConfig& banner, WishState& state, int cou
 
     WishBatch batch;
     for (int i = 0; i < count; ++i) {
+        // 每抽先推进保底计数。命中 5 星会同时清空 5 星和 4 星计数。
         state.pity5 += 1;
         state.pity4 += 1;
 
@@ -146,6 +163,7 @@ WishBatch WishEngine::wish(const BannerConfig& banner, WishState& state, int cou
         result.wishNumber = state.stats.total + 1;
         result.hitHardPity5 = state.pity5 >= banner.fiveStarHardPity;
 
+        // 5 星判定优先级最高：到硬保底必出，否则按基础概率判定。
         bool isFiveStar = result.hitHardPity5 || random.nextDouble() < banner.fiveStarBaseRate;
         if (isFiveStar) {
             bool usedGuarantee = false;
@@ -155,6 +173,7 @@ WishBatch WishEngine::wish(const BannerConfig& banner, WishState& state, int cou
             state.pity4 = 0;
         } else {
             result.hitHardPity4 = state.pity4 >= banner.fourStarHardPity;
+            // 未命中 5 星时才判定 4 星。第 10 抽硬保底保证至少 4 星。
             bool isFourStar = result.hitHardPity4 || random.nextDouble() < banner.fourStarBaseRate;
             if (isFourStar) {
                 result.item = chooseFrom(filterItems(banner, 4), random);
@@ -164,6 +183,7 @@ WishBatch WishEngine::wish(const BannerConfig& banner, WishState& state, int cou
             }
         }
 
+        // 每次抽完把结果写入统计和历史。history 最新在前，方便前端直接渲染。
         result.fatePointsAfter = state.fatePoints;
         updateStats(state, result);
         state.history.insert(state.history.begin(), result);

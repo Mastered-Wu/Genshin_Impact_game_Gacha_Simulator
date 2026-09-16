@@ -19,6 +19,7 @@
 namespace gacha {
 namespace {
 
+// 把所有卡池配置组装成 JSON 数组，供 /api/state 和操作响应复用。
 std::string bannersArrayJson(const std::map<std::string, BannerConfig>& banners) {
     std::ostringstream out;
     out << "[";
@@ -33,6 +34,8 @@ std::string bannersArrayJson(const std::map<std::string, BannerConfig>& banners)
     return out.str();
 }
 
+// 从简单 JSON 请求体中取字符串字段。
+// 当前 API 只接收很小的固定结构，所以这里不用引入额外 JSON 库。
 std::string jsonStringField(const std::string& body, const std::string& field) {
     const std::string needle = "\"" + field + "\"";
     auto pos = body.find(needle);
@@ -69,6 +72,7 @@ std::string jsonStringField(const std::string& body, const std::string& field) {
     return value;
 }
 
+// 从简单 JSON 请求体中取整数字段，例如 /api/wish 的 count。
 std::optional<int> jsonIntField(const std::string& body, const std::string& field) {
     const std::string needle = "\"" + field + "\"";
     auto pos = body.find(needle);
@@ -95,6 +99,7 @@ std::optional<int> jsonIntField(const std::string& body, const std::string& fiel
     return value;
 }
 
+// 定位前端目录。支持从项目根目录运行，也支持从 build 目录附近运行。
 std::filesystem::path frontendRoot() {
     const auto cwd = std::filesystem::current_path();
     const auto fromRoot = cwd / "frontend";
@@ -108,6 +113,7 @@ std::filesystem::path frontendRoot() {
     return fromRoot;
 }
 
+// 读取静态文件内容，用于返回 index.html、styles.css 和 app.js。
 std::string readTextFile(const std::filesystem::path& path) {
     std::ifstream file(path, std::ios::binary);
     if (!file) {
@@ -118,6 +124,7 @@ std::string readTextFile(const std::filesystem::path& path) {
     return buffer.str();
 }
 
+// 根据文件后缀返回浏览器需要的 Content-Type。
 std::string contentTypeFor(const std::string& path) {
     if (path.size() >= 4 && path.substr(path.size() - 4) == ".css") {
         return "text/css; charset=utf-8";
@@ -128,6 +135,7 @@ std::string contentTypeFor(const std::string& path) {
     return "text/html; charset=utf-8";
 }
 
+// 拼接最小 HTTP 响应头和响应体。
 std::string httpResponse(int status, const std::string& statusText, const std::string& contentType, const std::string& body) {
     std::ostringstream out;
     out << "HTTP/1.1 " << status << " " << statusText << "\r\n"
@@ -143,6 +151,7 @@ std::string httpResponse(int status, const std::string& statusText, const std::s
 }
 
 AppController::AppController() : banners_(loadBuiltInBanners()) {
+    // 每个卡池都有独立状态，角色、武器、常驻互不共享保底。
     for (const auto& entry : banners_) {
         states_.emplace(entry.first, WishState{});
     }
@@ -171,6 +180,7 @@ bool AppController::isValidPathItem(const BannerConfig& banner, const std::strin
 }
 
 std::string AppController::responseWithState(const std::string& prefix) const {
+    // 操作接口会通过 prefix 塞入 results/bannerId/reset，再统一带上完整状态。
     std::ostringstream out;
     out << "{" << prefix
         << "\"banners\":" << bannersArrayJson(banners_)
@@ -194,6 +204,7 @@ std::string AppController::wishJson(const std::string& bannerId, int count) {
         return errorJson("invalid_count", "抽卡次数只能是 1 或 10");
     }
 
+    // AppController 只做参数校验和状态保存，抽卡规则全部委托给 WishEngine。
     auto batch = engine_.wish(*banner, *state, count, random_);
     std::ostringstream results;
     results << "\"results\":[";
@@ -219,6 +230,7 @@ std::string AppController::setPathJson(const std::string& bannerId, const std::s
     if (!itemId.empty() && !isValidPathItem(*banner, itemId)) {
         return errorJson("invalid_path_item", "无效的定轨目标");
     }
+    // 定轨目标变化或被清空时，命定值必须归零。
     if (state->selectedPathItemId != itemId) {
         state->selectedPathItemId = itemId;
         state->fatePoints = 0;
@@ -239,6 +251,7 @@ std::string AppController::resetJson() {
 #ifndef GACHA_TESTING
 int main() {
 #ifdef _WIN32
+    // Windows 下使用 Winsock 创建一个仅监听 127.0.0.1 的本地 HTTP 服务。
     WSADATA data;
     if (WSAStartup(MAKEWORD(2, 2), &data) != 0) {
         std::cerr << "Failed to initialize Winsock\n";
@@ -275,6 +288,7 @@ int main() {
     std::cout << "Gacha simulator running at http://127.0.0.1:18080\n";
 
     while (true) {
+        // 这个服务器是单线程、短连接模型：接收一个请求，生成响应，然后关闭连接。
         SOCKET client = accept(serverSocket, nullptr, nullptr);
         if (client == INVALID_SOCKET) {
             continue;
@@ -298,6 +312,7 @@ int main() {
         std::string body = bodyStart == std::string::npos ? "" : request.substr(bodyStart + 4);
         std::string response;
 
+        // API 路由返回 JSON；其它路径按静态文件处理。
         if (method == "GET" && path == "/api/state") {
             response = gacha::httpResponse(200, "OK", "application/json; charset=utf-8", app.stateJson());
         } else if (method == "POST" && path == "/api/wish") {

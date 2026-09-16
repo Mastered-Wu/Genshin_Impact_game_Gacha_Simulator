@@ -5,6 +5,7 @@
 namespace gacha {
 namespace {
 
+// 把 C++ 枚举转成前端和 API 约定的稳定字符串。
 std::string bannerTypeJson(BannerType type) {
     switch (type) {
     case BannerType::CharacterEvent:
@@ -76,6 +77,7 @@ std::string bannerJson(const BannerConfig& banner) {
         }
         out << itemJson(banner.items[i]);
     }
+    // pathItems 是武器定轨下拉框使用的数据，只暴露两把限定 5 星武器。
     out << "],\"pathItems\":[";
     bool first = true;
     for (const auto& item : banner.items) {

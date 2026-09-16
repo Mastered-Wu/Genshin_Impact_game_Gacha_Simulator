@@ -2,6 +2,8 @@
 
 namespace gacha {
 
+// 第一版后端直接使用内置卡池配置，保证离线运行且避免解析依赖。
+// configs/banners.json 保留为可审阅的项目资料，字段需要和这里保持一致。
 std::map<std::string, BannerConfig> loadBuiltInBanners() {
     BannerConfig character;
     character.id = "character-event";
