@@ -66,6 +66,16 @@ Item chooseById(const BannerConfig& banner, const std::string& id) {
     return *found;
 }
 
+// 计算本抽的 5 星实际概率。角色池配置为 73 抽后进入软保底：
+// 第 74 抽起，每抽在基础概率上额外增加 fiveStarSoftPityIncrease。
+double effectiveFiveStarRate(const BannerConfig& banner, int pity5AfterIncrement) {
+    double rate = banner.fiveStarBaseRate;
+    if (banner.fiveStarSoftPityStart > 0 && pity5AfterIncrement > banner.fiveStarSoftPityStart) {
+        rate += (pity5AfterIncrement - banner.fiveStarSoftPityStart) * banner.fiveStarSoftPityIncrease;
+    }
+    return std::min(rate, 1.0);
+}
+
 // 处理“已经确定本抽是 5 星之后”的具体归属。
 // 这里集中实现角色 50/50、角色限定保底、武器 75/25、武器限定保底和命定值强制。
 Item chooseFiveStar(const BannerConfig& banner, WishState& state, RandomProvider& random, bool& usedGuarantee) {
@@ -163,8 +173,9 @@ WishBatch WishEngine::wish(const BannerConfig& banner, WishState& state, int cou
         result.wishNumber = state.stats.total + 1;
         result.hitHardPity5 = state.pity5 >= banner.fiveStarHardPity;
 
-        // 5 星判定优先级最高：到硬保底必出，否则按基础概率判定。
-        bool isFiveStar = result.hitHardPity5 || random.nextDouble() < banner.fiveStarBaseRate;
+        // 5 星判定优先级最高：到硬保底必出，否则按当前抽数的有效概率判定。
+        // 对角色活动池，第 73 抽后会逐抽提高概率；没有配置软保底的池仍使用基础概率。
+        bool isFiveStar = result.hitHardPity5 || random.nextDouble() < effectiveFiveStarRate(banner, state.pity5);
         if (isFiveStar) {
             bool usedGuarantee = false;
             result.item = chooseFiveStar(banner, state, random, usedGuarantee);

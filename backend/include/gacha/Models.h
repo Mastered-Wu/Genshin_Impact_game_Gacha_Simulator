@@ -21,12 +21,14 @@ struct Item {
     bool promotional = false;
 };
 
-// 一个卡池的完整规则配置：基础概率、硬保底阈值和可抽物品列表。
+// 一个卡池的完整规则配置：基础概率、软/硬保底阈值和可抽物品列表。
 struct BannerConfig {
     std::string id;
     std::string name;
     BannerType type = BannerType::Standard;
     double fiveStarBaseRate = 0.006;
+    int fiveStarSoftPityStart = 0;
+    double fiveStarSoftPityIncrease = 0.0;
     int fiveStarHardPity = 90;
     double fourStarBaseRate = 0.051;
     int fourStarHardPity = 10;

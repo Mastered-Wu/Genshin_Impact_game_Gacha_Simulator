@@ -10,6 +10,8 @@ std::map<std::string, BannerConfig> loadBuiltInBanners() {
     character.name = "星辉同行";
     character.type = BannerType::CharacterEvent;
     character.fiveStarBaseRate = 0.006;
+    character.fiveStarSoftPityStart = 73;
+    character.fiveStarSoftPityIncrease = 0.06;
     character.fiveStarHardPity = 90;
     character.fourStarBaseRate = 0.051;
     character.fourStarHardPity = 10;

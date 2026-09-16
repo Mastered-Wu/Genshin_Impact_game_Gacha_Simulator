@@ -68,7 +68,10 @@ std::string bannerJson(const BannerConfig& banner) {
     out << "{\"id\":\"" << escapeJson(banner.id)
         << "\",\"name\":\"" << escapeJson(banner.name)
         << "\",\"type\":\"" << bannerTypeJson(banner.type)
-        << "\",\"fiveStarHardPity\":" << banner.fiveStarHardPity
+        << "\",\"fiveStarBaseRate\":" << banner.fiveStarBaseRate
+        << ",\"fiveStarSoftPityStart\":" << banner.fiveStarSoftPityStart
+        << ",\"fiveStarSoftPityIncrease\":" << banner.fiveStarSoftPityIncrease
+        << ",\"fiveStarHardPity\":" << banner.fiveStarHardPity
         << ",\"fourStarHardPity\":" << banner.fourStarHardPity
         << ",\"items\":[";
     for (std::size_t i = 0; i < banner.items.size(); ++i) {

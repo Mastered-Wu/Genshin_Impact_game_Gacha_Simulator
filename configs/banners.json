@@ -5,6 +5,8 @@
       "name": "星辉同行",
       "type": "character-event",
       "fiveStarBaseRate": 0.006,
+      "fiveStarSoftPityStart": 73,
+      "fiveStarSoftPityIncrease": 0.06,
       "fiveStarHardPity": 90,
       "fourStarBaseRate": 0.051,
       "fourStarHardPity": 10,

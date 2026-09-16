@@ -20,6 +20,8 @@ static BannerConfig makeCharacterBanner() {
     banner.name = "星辉同行";
     banner.type = BannerType::CharacterEvent;
     banner.fiveStarBaseRate = 0.006;
+    banner.fiveStarSoftPityStart = 73;
+    banner.fiveStarSoftPityIncrease = 0.06;
     banner.fiveStarHardPity = 90;
     banner.fourStarBaseRate = 0.051;
     banner.fourStarHardPity = 10;
@@ -57,6 +59,8 @@ static BannerConfig makeStandardBanner() {
     banner.id = "standard";
     banner.name = "常驻星轨";
     banner.type = BannerType::Standard;
+    banner.fiveStarSoftPityStart = 0;
+    banner.fiveStarSoftPityIncrease = 0.0;
     banner.items[0].featured = false;
     return banner;
 }
@@ -100,6 +104,26 @@ static void character_lost_fifty_fifty_guarantees_next_featured() {
     auto second = engine.wish(banner, state, 1, secondRandom);
     require(second.results[0].item.id == "featured-hero", "next 5-star should be featured");
     require(!state.featuredGuarantee, "featured guarantee should clear after use");
+}
+
+static void character_soft_pity_increases_five_star_rate_after_73() {
+    WishEngine engine;
+    auto banner = makeCharacterBanner();
+
+    WishState beforeSoftPity;
+    beforeSoftPity.pity5 = 72;
+    beforeSoftPity.pity4 = 0;
+    SequenceRandom beforeRandom({0.065, 0.99});
+    auto before = engine.wish(banner, beforeSoftPity, 1, beforeRandom);
+    require(before.results[0].item.rarity == 3, "73rd wish should still use base 5-star rate");
+
+    WishState afterSoftPity;
+    afterSoftPity.pity5 = 73;
+    afterSoftPity.pity4 = 0;
+    SequenceRandom afterRandom({0.065, 0.0});
+    auto after = engine.wish(banner, afterSoftPity, 1, afterRandom);
+    require(after.results[0].item.rarity == 5, "74th wish should use increased soft pity rate");
+    require(afterSoftPity.pity5 == 0, "soft pity 5-star should reset 5-star pity");
 }
 
 static void every_banner_four_star_hard_pity_at_10() {
@@ -168,6 +192,7 @@ int main() {
         character_hard_pity_forces_five_star_at_90();
         standard_hard_pity_forces_five_star_at_90();
         character_lost_fifty_fifty_guarantees_next_featured();
+        character_soft_pity_increases_five_star_rate_after_73();
         every_banner_four_star_hard_pity_at_10();
         weapon_hard_pity_forces_five_star_at_80();
         weapon_lost_promotional_roll_guarantees_next_promotional();
