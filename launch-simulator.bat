@@ -1,5 +1,2 @@
 @echo off
-cd /d "%~dp0"
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\start-background.ps1"
-if errorlevel 1 pause & exit /b 1
-start "" "http://127.0.0.1:18080/"
+start "" powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -Command "Set-Location -LiteralPath '%~dp0'; .\scripts\start-background.ps1; Start-Process 'http://127.0.0.1:18080/'"

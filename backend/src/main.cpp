@@ -260,7 +260,7 @@ std::string AppController::resetJson() {
     for (const auto& entry : banners_) {
         states_.emplace(entry.first, WishState{});
     }
-    currency_ = 0;
+    currency_ = 16000;
     return responseWithState("\"reset\":true,");
 }
 

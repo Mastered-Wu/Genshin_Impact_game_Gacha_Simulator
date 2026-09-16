@@ -30,6 +30,7 @@ static void invalid_wish_count_returns_stable_code() {
 static void resources_gate_wishes_and_deduct_cost() {
     AppController app;
 
+    app.setCurrencyJson(0);
     auto insufficient = app.wishJson("character-event", 1);
     require(insufficient.find("\"code\":\"insufficient_currency\"") != std::string::npos, "wish without resources should fail");
 

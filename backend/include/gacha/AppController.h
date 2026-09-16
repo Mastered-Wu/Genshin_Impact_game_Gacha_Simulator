@@ -38,7 +38,7 @@ private:
 
     std::map<std::string, BannerConfig> banners_;
     std::map<std::string, WishState> states_;
-    int currency_ = 0;
+    int currency_ = 16000;
     int wishCost_ = 160;
     DefaultRandom random_;
     WishEngine engine_;

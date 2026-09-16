@@ -1,7 +1,7 @@
 const state = {
   banners: [],
   states: {},
-  resources: { currency: 0, wishCost: 160, affordableWishes: 0 },
+  resources: { currency: 16000, wishCost: 160, affordableWishes: 100 },
   currentBannerId: "character-event",
   latestResults: [],
   loading: false,
