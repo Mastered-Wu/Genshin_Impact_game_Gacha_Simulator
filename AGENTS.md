@@ -143,6 +143,7 @@ cmake --build build
 - 不要回滚、删除或覆盖不是自己本轮任务产生的改动。
 - 不要提交 `build/`、CMake 中间文件、可执行文件、日志或临时文件。
 - 每个提交应聚焦一个任务或一个明确修复。
+- 工程级别的实现、重构、测试、文档或配置修改完成并验证后，必须及时提交到 Git；除非用户明确要求暂不提交，不得只停留在未提交工作区。
 - 推荐提交信息：
   - `feat: add gacha wish engine`
   - `feat: add local gacha API server`

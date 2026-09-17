@@ -1,10 +1,13 @@
 const state = {
   banners: [],
   states: {},
-  resources: { currency: 16000, wishCost: 160, affordableWishes: 100 },
+  resources: { currency: 16000, eventFates: 0, standardFates: 0, wishCost: 160 },
   currentBannerId: "character-event",
   latestResults: [],
   loading: false,
+  pendingTopUp: null,
+  uid: "",
+  activeView: "wish",
 };
 
 const $ = (id) => document.getElementById(id);
@@ -30,13 +33,46 @@ async function loadState() {
   }
 }
 
-async function performWish(count) {
+function handleUidInput() {
+  const input = $("uid-input");
+  input.value = input.value.replace(/\D/g, "").slice(0, 9);
+  const valid = isValidUid(input.value);
+  $("enter-button").disabled = !valid;
+  $("login-message").textContent = valid ? "可以进入模拟器" : "UID 必须为 9 位数字";
+}
+
+async function enterSimulator() {
+  const uid = $("uid-input").value.trim();
+  if (!isValidUid(uid)) {
+    $("login-message").textContent = "请输入 9 位数字 UID";
+    return;
+  }
+
+  state.uid = uid;
+  $("uid-display").textContent = `UID ${uid}`;
+  $("login-screen").classList.add("hidden");
+  $("simulator-app").classList.remove("hidden");
+  $("simulator-app").setAttribute("aria-hidden", "false");
+  await loadState();
+}
+
+function isValidUid(uid) {
+  return /^\d{9}$/.test(uid);
+}
+
+async function performWish(count, allowCurrencyTopUp = false) {
   setLoading(true);
   try {
     const data = await requestJson("/api/wish", {
       method: "POST",
-      body: JSON.stringify({ bannerId: state.currentBannerId, count }),
+      body: JSON.stringify({ bannerId: state.currentBannerId, count, allowCurrencyTopUp }),
     });
+    if (data.code === "need_currency_confirm") {
+      applyServerState(data);
+      render();
+      openTopUpModal(count, data.missingFates || 0, data.requiredCurrency || 0);
+      return;
+    }
     if (data.code) {
       showMessage(data.error || "操作失败");
       return;
@@ -75,6 +111,34 @@ async function updateResources() {
     showMessage("资源已更新");
   } catch (error) {
     showMessage("资源设置请求失败");
+  } finally {
+    setLoading(false);
+  }
+}
+
+async function exchangeFates() {
+  const fates = Number.parseInt($("exchange-range").value, 10);
+  if (!Number.isFinite(fates) || fates < 1) {
+    showMessage("请选择要兑换的数量");
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const data = await requestJson("/api/exchange", {
+      method: "POST",
+      body: JSON.stringify({ bannerId: state.currentBannerId, fates }),
+    });
+    if (data.code) {
+      showMessage(data.error || "兑换失败");
+      return;
+    }
+    applyServerState(data);
+    closeExchangeModal();
+    render();
+    showMessage(`已兑换 ${fates} 个${fateNameForCurrentBanner()}`);
+  } catch (error) {
+    showMessage("兑换请求失败");
   } finally {
     setLoading(false);
   }
@@ -127,7 +191,19 @@ function applyServerState(data) {
 
 function setLoading(loading) {
   state.loading = loading;
-  ["wish-one", "wish-ten", "reset-button", "path-select", "resource-input", "resource-button"].forEach((id) => {
+  [
+    "wish-one",
+    "wish-ten",
+    "reset-button",
+    "path-select",
+    "resource-input",
+    "resource-button",
+    "exchange-button",
+    "exchange-confirm",
+    "exchange-cancel",
+    "topup-confirm",
+    "topup-cancel",
+  ].forEach((id) => {
     const element = $(id);
     if (element) {
       element.disabled = loading;
@@ -157,17 +233,47 @@ function render() {
   renderResults(state.latestResults);
   renderHistory();
   renderStats();
+  renderActiveView();
+}
+
+function showView(view) {
+  state.activeView = view;
+  renderActiveView();
+  showMessage("");
+}
+
+function renderActiveView() {
+  const views = {
+    wish: $("wish-view"),
+    stats: $("stats-view"),
+    history: $("history-view"),
+  };
+  Object.entries(views).forEach(([name, element]) => {
+    if (element) {
+      element.classList.toggle("hidden", name !== state.activeView);
+    }
+  });
 }
 
 function renderResources() {
+  const banner = currentBanner();
   const currency = state.resources.currency || 0;
+  const eventFates = state.resources.eventFates || 0;
+  const standardFates = state.resources.standardFates || 0;
   const wishCost = state.resources.wishCost || 160;
-  const affordableWishes = state.resources.affordableWishes || Math.floor(currency / wishCost);
+  const activeFates = isStandardBanner(banner) ? standardFates : eventFates;
+  const affordableWishes = activeFates + Math.floor(currency / wishCost);
+  const exchangeableFates = state.resources.exchangeableFates ?? Math.floor(currency / wishCost);
   $("resource-balance").textContent = currency;
+  $("event-fate-balance").textContent = eventFates;
+  $("standard-fate-balance").textContent = standardFates;
   $("affordable-wishes").textContent = affordableWishes;
   $("resource-input").value = currency;
+  $("exchange-button").textContent = `兑换${fateNameForBanner(banner)}`;
+  $("exchange-button").disabled = state.loading || exchangeableFates < 1;
   $("wish-one").disabled = state.loading || affordableWishes < 1;
   $("wish-ten").disabled = state.loading || affordableWishes < 10;
+  updateExchangeRange();
 }
 
 function renderBannerOptions() {
@@ -177,7 +283,7 @@ function renderBannerOptions() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = `tab-button${banner.id === state.currentBannerId ? " active" : ""}`;
-    button.textContent = banner.name;
+    button.innerHTML = `<span>${escapeHtml(banner.name)}</span><small>${poolTypeLabel(banner)}</small>`;
     button.addEventListener("click", () => {
       state.currentBannerId = banner.id;
       state.latestResults = [];
@@ -196,6 +302,8 @@ function renderCurrentBanner() {
   const bannerState = currentBannerState();
   const fiveStars = banner.items.filter((item) => item.rarity === 5 && (item.featured || item.promotional));
   $("current-banner-name").textContent = banner.name;
+  $("pool-type-badge").textContent = poolTypeLabel(banner);
+  $("pool-type-badge").className = `pool-type ${isStandardBanner(banner) ? "standard" : "limited"}`;
   $("banner-subtitle").textContent = banner.id === "weapon-event" ? "武器活动祈愿" : banner.id === "standard" ? "常驻祈愿" : "角色活动祈愿";
   $("featured-line").textContent = fiveStars.length > 0
     ? `限定：${fiveStars.map((item) => item.name).join("、")}`
@@ -320,10 +428,95 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;");
 }
 
+function openExchangeModal() {
+  updateExchangeRange();
+  $("exchange-title").textContent = `兑换${fateNameForCurrentBanner()}`;
+  $("exchange-modal").classList.remove("hidden");
+}
+
+function closeExchangeModal() {
+  $("exchange-modal").classList.add("hidden");
+}
+
+function updateExchangeRange() {
+  const currency = state.resources.currency || 0;
+  const wishCost = state.resources.wishCost || 160;
+  const max = Math.floor(currency / wishCost);
+  const range = $("exchange-range");
+  range.max = String(max);
+  if (Number.parseInt(range.value, 10) > max) {
+    range.value = String(max);
+  }
+  if (max > 0 && Number.parseInt(range.value, 10) < 1) {
+    range.value = "1";
+  }
+  const fates = Number.parseInt(range.value, 10) || 0;
+  $("exchange-count").textContent = `${fates} 个`;
+  $("exchange-cost").textContent = `消耗 ${fates * wishCost} 星石`;
+  $("exchange-confirm").disabled = state.loading || fates < 1;
+  $("exchange-copy").textContent = max > 0
+    ? `当前池子使用${fateNameForCurrentBanner()}，最多可兑换 ${max} 个。`
+    : "星石不足 160，暂时无法兑换。";
+}
+
+function openTopUpModal(count, missingFates, requiredCurrency) {
+  state.pendingTopUp = { count };
+  $("topup-title").textContent = `${fateNameForCurrentBanner()}不足`;
+  $("topup-copy").textContent = `还差 ${missingFates} 个${fateNameForCurrentBanner()}，需要补充 ${requiredCurrency} 星石。`;
+  $("topup-modal").classList.remove("hidden");
+}
+
+function closeTopUpModal() {
+  state.pendingTopUp = null;
+  $("topup-modal").classList.add("hidden");
+}
+
+async function confirmTopUpWish() {
+  const pending = state.pendingTopUp;
+  closeTopUpModal();
+  if (pending) {
+    await performWish(pending.count, true);
+  }
+}
+
+function isStandardBanner(banner) {
+  return banner && banner.id === "standard";
+}
+
+function fateNameForBanner(banner) {
+  return isStandardBanner(banner) ? "恒辉之缘" : "星轨之缘";
+}
+
+function fateNameForCurrentBanner() {
+  return fateNameForBanner(currentBanner());
+}
+
+function poolTypeLabel(banner) {
+  return isStandardBanner(banner) ? "常驻池" : "限定池";
+}
+
 $("wish-one").addEventListener("click", () => performWish(1));
 $("wish-ten").addEventListener("click", () => performWish(10));
+$("open-stats").addEventListener("click", () => showView("stats"));
+$("open-history").addEventListener("click", () => showView("history"));
+document.querySelectorAll(".back-button").forEach((button) => {
+  button.addEventListener("click", () => showView(button.dataset.view || "wish"));
+});
+$("uid-input").addEventListener("input", handleUidInput);
+$("uid-input").addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && isValidUid(event.currentTarget.value)) {
+    enterSimulator();
+  }
+});
+$("enter-button").addEventListener("click", enterSimulator);
 $("reset-button").addEventListener("click", resetSimulator);
 $("resource-button").addEventListener("click", updateResources);
+$("exchange-button").addEventListener("click", openExchangeModal);
+$("exchange-range").addEventListener("input", updateExchangeRange);
+$("exchange-cancel").addEventListener("click", closeExchangeModal);
+$("exchange-confirm").addEventListener("click", exchangeFates);
+$("topup-cancel").addEventListener("click", closeTopUpModal);
+$("topup-confirm").addEventListener("click", confirmTopUpWish);
 $("resource-input").addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     updateResources();
@@ -331,4 +524,4 @@ $("resource-input").addEventListener("keydown", (event) => {
 });
 $("path-select").addEventListener("change", (event) => updatePath(event.target.value));
 
-loadState();
+handleUidInput();

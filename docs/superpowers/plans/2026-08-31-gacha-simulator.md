@@ -15,7 +15,7 @@
 - 所有模拟器文件必须位于 `C:\Users\27415\Desktop\抽卡模拟器`。
 - 后端逻辑必须使用 C++。
 - 前端必须使用纯 HTML/CSS/JavaScript。
-- 第一屏必须是可用的模拟器，而不是落地页。
+- 用户后续要求网页第一屏改为 UID 登录界面；输入 9 位数字 UID 后进入抽卡主界面，统计和历史分别通过主界面下方按钮进入独立页面。
 - 使用原创占位名称和资源，不使用官方游戏物品名、美术或 Logo。
 - 角色活动祈愿硬保底为 90 抽。
 - 角色活动祈愿 5 星基础概率为 0.6%。
@@ -400,7 +400,7 @@ git commit -m "feat: add gacha wish engine"
 **接口：**
 - 消耗：`WishEngine::wish`、`BannerConfig`、`WishState`、`DefaultRandom`
 - 产出：可执行文件 `gacha_server`
-- 产出：接口 `GET /api/state`、`POST /api/wish`、`POST /api/path`、`POST /api/reset`
+- 产出：接口 `GET /api/state`、`POST /api/wish`、`POST /api/resources`、`POST /api/exchange`、`POST /api/path`、`POST /api/reset`
 - 产出：为 `/`、`/styles.css`、`/app.js` 提供静态文件服务
 
 - [ ] **步骤 1：编写失败的 API 冒烟测试**
@@ -457,7 +457,7 @@ WishEngine engine_;
 行为：
 
 - `stateJson()` 返回所有卡池和当前所有状态。
-- `wishJson()` 只接受抽卡次数 `1` 或 `10`；否则返回包含 `"code":"invalid_count"` 的 JSON。
+- `wishJson()` 只接受抽卡次数 `1` 或 `10`；否则返回包含 `"code":"invalid_count"` 的 JSON。限定池优先消耗星轨之缘，常驻池优先消耗恒辉之缘，不足时可通过确认参数使用星石补足。
 - `setPathJson()` 只接受武器卡池，以及限定 5 星武器中的物品 id；更改或清除定轨会重置命定值。
 - `resetJson()` 将所有状态重置为默认值。
 
@@ -512,6 +512,7 @@ git commit -m "feat: add local gacha API server"
 - 消耗：`POST /api/wish`
 - 消耗：`POST /api/path`
 - 消耗：`POST /api/reset`
+- 消耗：`POST /api/exchange`
 - 产出：可在浏览器中使用的中文模拟器。
 
 - [ ] **步骤 1：创建由 API 驱动的前端文件**
@@ -522,7 +523,7 @@ git commit -m "feat: add local gacha API server"
 - `character-event`、`weapon-event` 和 `standard` 的卡池标签页或选择器。
 - 武器定轨选择区域，仅在当前卡池为 `weapon-event` 时显示。
 - 保底和保底状态行。
-- 资源输入区域，按 160 资源一抽扣减并显示可抽次数。
+- 资源输入区域，显示星石、星轨之缘、恒辉之缘和当前卡池总可抽次数，并支持按 160 星石兑换 1 个对应缘券。
 - `单抽` 和 `十连` 按钮。
 - 最新结果区域。
 - 历史和统计面板。
@@ -604,6 +605,7 @@ git commit -m "feat: add simulator frontend"
 ```powershell
 Invoke-RestMethod http://127.0.0.1:18080/api/state
 Invoke-RestMethod -Method Post -ContentType 'application/json' -Body '{"currency":1600}' http://127.0.0.1:18080/api/resources
+Invoke-RestMethod -Method Post -ContentType 'application/json' -Body '{"bannerId":"character-event","fates":10}' http://127.0.0.1:18080/api/exchange
 Invoke-RestMethod -Method Post -ContentType 'application/json' -Body '{"bannerId":"character-event","count":10}' http://127.0.0.1:18080/api/wish
 Invoke-RestMethod -Method Post -ContentType 'application/json' -Body '{"bannerId":"weapon-event","itemId":"weapon-a"}' http://127.0.0.1:18080/api/path
 ```

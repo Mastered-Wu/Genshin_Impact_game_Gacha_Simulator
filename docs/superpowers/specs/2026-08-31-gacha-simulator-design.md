@@ -11,8 +11,9 @@
 - 角色活动祈愿模拟：5 星软/硬保底、4 星保底、50/50 限定保底，以及状态继承。
 - 武器活动祈愿模拟：5 星保底、4 星保底、75/25 概率规则、两把限定 5 星武器，以及类似「神铸定轨」的命定值。
 - 常驻祈愿模拟：独立保底，并使用角色和武器混合卡池。
+- 打开网页后先显示 UID 登录界面，用户输入 9 位数字 UID 后进入抽卡主界面。
 - 单抽和十连操作。
-- 资源输入与扣减，按 160 资源一抽计算。
+- 星石输入、限定池星轨之缘兑换、常驻池恒辉之缘兑换与扣减，按 160 星石兑换 1 个对应缘券计算。
 - 可见的保底计数、保底状态、命定值、抽卡历史和统计摘要。
 - 以项目文件形式保存的可配置物品池。
 - 针对后端概率和状态行为的自动化测试。
@@ -98,20 +99,22 @@ C++ 后端负责所有祈愿规则和持久化会话状态。后端暴露一个�
 本地服务器监听 `127.0.0.1`，同时提供静态前端文件和 JSON 接口。
 
 - `GET /api/state`：返回卡池状态、当前选中卡池、保底计数、保底标记、命定值、历史和统计。
-- `POST /api/wish`：接收 `{ "bannerId": "character-event", "count": 1 }` 或 `{ "bannerId": "character-event", "count": 10 }`，扣除对应资源后返回抽卡结果和更新后的状态。
-- `POST /api/resources`：接收 `{ "currency": 1600 }`，更新玩家当前可用资源。资源按 160 一抽扣减，余额不足时拒绝抽卡。
+- `POST /api/wish`：接收 `{ "bannerId": "character-event", "count": 1 }` 或 `{ "bannerId": "character-event", "count": 10 }`，限定池优先扣除星轨之缘，常驻池优先扣除恒辉之缘；如果对应缘券不足且未确认补足，返回 `need_currency_confirm`。
+- `POST /api/resources`：接收 `{ "currency": 1600 }`，更新玩家当前可用星石。
+- `POST /api/exchange`：接收 `{ "bannerId": "character-event", "fates": 10 }`，按 160 星石兑换 1 个当前卡池对应缘券。
 - `POST /api/path`：接收 `{ "bannerId": "weapon-event", "itemId": "weapon-a" }` 或 `{ "bannerId": "weapon-event", "itemId": null }`，更新武器定轨，并在定轨变化时重置命定值。
 - `POST /api/reset`：重置模拟器状态，便于本地测试。
 
-错误响应使用 JSON，包含 `error` 字符串和稳定的 `code`，例如 `unknown_banner`、`invalid_count`、`invalid_path_item`、`invalid_currency` 或 `insufficient_currency`。
+错误响应使用 JSON，包含 `error` 字符串和稳定的 `code`，例如 `unknown_banner`、`invalid_count`、`invalid_path_item`、`invalid_currency`、`invalid_exchange_count`、`need_currency_confirm` 或 `insufficient_currency`。
 
 ## 前端设计
 
-第一屏就是可用的模拟器，而不是落地页。界面应包含：
+按用户后续变更，网页第一屏为 UID 登录界面。UID 必须为 9 位数字，校验通过后显示可用模拟器；该登录仅作为本地前端入口门槛，不引入账号系统或远程认证。模拟器界面应包含：
 
 - 紧凑的顶部栏，包含卡池选择和重置操作。
 - 主祈愿面板，展示卡池名称、限定物品、保底计数、保底标签，以及相关场景下的命定值。
-- 资源输入区域，展示当前资源、可抽次数，并按 160 资源一抽扣减。
+- 资源输入区域，展示当前星石、星轨之缘、恒辉之缘和当前卡池总可抽次数，并提供滑条兑换窗口。
+- 对应缘券不足时，弹出确认窗口提示缺少数量和需要补充的星石数量。
 - 单抽和十连的主要操作按钮。
 - 结果区域，展示最近一组抽卡结果，并按稀有度区分样式。
 - 历史面板，最新祈愿排在最前。

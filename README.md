@@ -7,7 +7,8 @@
 - 角色活动祈愿：0.6% 5 星基础概率、73 抽后每抽增加 6% 出金率、90 抽硬保底、10 抽 4 星或以上保底、50/50 与限定保底。
 - 武器活动祈愿：0.7% 5 星基础概率、80 抽硬保底、10 抽 4 星或以上保底、75/25、限定保底和命定值。
 - 常驻祈愿：0.6% 5 星基础概率、90 抽硬保底、10 抽 4 星或以上保底。
-- 单抽、十连、资源输入、历史、统计、保底状态和武器定轨。
+- 打开网页后先输入 9 位数字 UID，校验通过后进入抽卡主界面。
+- 单抽、十连、星石输入、限定池星轨之缘兑换、常驻池恒辉之缘兑换、星石补足确认、保底状态和武器定轨。统计和历史分别作为独立页面，通过抽卡主界面下方按钮进入。
 
 ## 构建
 
@@ -62,10 +63,11 @@ http://127.0.0.1:18080
 - `GET /api/state`
 - `POST /api/wish`，请求示例：`{ "bannerId": "character-event", "count": 10 }`
 - `POST /api/resources`，请求示例：`{ "currency": 1600 }`
+- `POST /api/exchange`，请求示例：`{ "bannerId": "character-event", "fates": 10 }`
 - `POST /api/path`，请求示例：`{ "bannerId": "weapon-event", "itemId": "weapon-a" }`
 - `POST /api/reset`
 
-错误响应包含稳定的 `code` 字段，例如 `unknown_banner`、`invalid_count`、`invalid_path_item`、`invalid_currency`、`insufficient_currency`。
+角色/武器限定池会优先消耗星轨之缘，常驻池会优先消耗恒辉之缘；不足时可用 `allowCurrencyTopUp: true` 确认按 160 星石一抽补足。错误响应包含稳定的 `code` 字段，例如 `unknown_banner`、`invalid_count`、`invalid_path_item`、`invalid_currency`、`invalid_exchange_count`、`need_currency_confirm`、`insufficient_currency`。
 
 ## 协作注意
 

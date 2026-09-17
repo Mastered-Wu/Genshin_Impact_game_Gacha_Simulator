@@ -99,6 +99,20 @@ std::optional<int> jsonIntField(const std::string& body, const std::string& fiel
     return value;
 }
 
+bool jsonBoolField(const std::string& body, const std::string& field) {
+    const std::string needle = "\"" + field + "\"";
+    auto pos = body.find(needle);
+    if (pos == std::string::npos) {
+        return false;
+    }
+    pos = body.find(':', pos);
+    if (pos == std::string::npos) {
+        return false;
+    }
+    pos = body.find_first_not_of(" \t\r\n", pos + 1);
+    return pos != std::string::npos && body.compare(pos, 4, "true") == 0;
+}
+
 // 定位前端目录。支持从项目根目录运行，也支持从 build 目录附近运行。
 std::filesystem::path frontendRoot() {
     const auto cwd = std::filesystem::current_path();
@@ -179,6 +193,18 @@ bool AppController::isValidPathItem(const BannerConfig& banner, const std::strin
     });
 }
 
+int AppController::fateBalanceFor(const BannerConfig& banner) const {
+    return banner.type == BannerType::Standard ? standardFates_ : eventFates_;
+}
+
+int& AppController::mutableFateBalanceFor(const BannerConfig& banner) {
+    return banner.type == BannerType::Standard ? standardFates_ : eventFates_;
+}
+
+std::string AppController::fateNameFor(const BannerConfig& banner) const {
+    return banner.type == BannerType::Standard ? "恒辉之缘" : "星轨之缘";
+}
+
 std::string AppController::responseWithState(const std::string& prefix) const {
     // 操作接口会通过 prefix 塞入 results/bannerId/reset，再统一带上完整状态。
     std::ostringstream out;
@@ -186,8 +212,12 @@ std::string AppController::responseWithState(const std::string& prefix) const {
         << "\"banners\":" << bannersArrayJson(banners_)
         << ",\"states\":" << allStatesJson(states_)
         << ",\"resources\":{\"currency\":" << currency_
+        << ",\"eventFates\":" << eventFates_
+        << ",\"standardFates\":" << standardFates_
         << ",\"wishCost\":" << wishCost_
-        << ",\"affordableWishes\":" << currency_ / wishCost_
+        << ",\"exchangeableFates\":" << currency_ / wishCost_
+        << ",\"affordableEventWishes\":" << eventFates_ + (currency_ / wishCost_)
+        << ",\"affordableStandardWishes\":" << standardFates_ + (currency_ / wishCost_)
         << "}"
         << ",\"currentBannerId\":\"character-event\""
         << "}";
@@ -198,7 +228,7 @@ std::string AppController::stateJson() const {
     return responseWithState("");
 }
 
-std::string AppController::wishJson(const std::string& bannerId, int count) {
+std::string AppController::wishJson(const std::string& bannerId, int count, bool allowCurrencyTopUp) {
     const auto* banner = findBanner(bannerId);
     auto* state = findState(bannerId);
     if (banner == nullptr || state == nullptr) {
@@ -207,14 +237,34 @@ std::string AppController::wishJson(const std::string& bannerId, int count) {
     if (count != 1 && count != 10) {
         return errorJson("invalid_count", "抽卡次数只能是 1 或 10");
     }
-    const int totalCost = count * wishCost_;
-    if (currency_ < totalCost) {
+    int& fateBalance = mutableFateBalanceFor(*banner);
+    const int missingFates = std::max(0, count - fateBalance);
+    const int requiredCurrency = missingFates * wishCost_;
+    if (missingFates > 0 && !allowCurrencyTopUp) {
+        std::ostringstream out;
+        out << "{\"error\":\"缘券不足\",\"code\":\"need_currency_confirm\""
+            << ",\"missingFates\":" << missingFates
+            << ",\"requiredCurrency\":" << requiredCurrency
+            << ",\"fateName\":\"" << escapeJson(fateNameFor(*banner)) << "\""
+            << ",\"resources\":{\"currency\":" << currency_
+            << ",\"eventFates\":" << eventFates_
+            << ",\"standardFates\":" << standardFates_
+            << ",\"wishCost\":" << wishCost_
+            << ",\"exchangeableFates\":" << currency_ / wishCost_
+            << ",\"affordableEventWishes\":" << eventFates_ + (currency_ / wishCost_)
+            << ",\"affordableStandardWishes\":" << standardFates_ + (currency_ / wishCost_)
+            << "}}";
+        return out.str();
+    }
+    if (currency_ < requiredCurrency) {
         return errorJson("insufficient_currency", "资源不足，无法完成本次抽卡");
     }
 
     // AppController 只做参数校验和状态保存，抽卡规则全部委托给 WishEngine。
     auto batch = engine_.wish(*banner, *state, count, random_);
-    currency_ -= totalCost;
+    const int fatesUsed = std::min(fateBalance, count);
+    fateBalance -= fatesUsed;
+    currency_ -= requiredCurrency;
     std::ostringstream results;
     results << "\"results\":[";
     for (std::size_t i = 0; i < batch.results.size(); ++i) {
@@ -233,6 +283,24 @@ std::string AppController::setCurrencyJson(int currency) {
     }
     currency_ = currency;
     return responseWithState("\"resourcesUpdated\":true,");
+}
+
+std::string AppController::exchangeFatesJson(const std::string& bannerId, int fates) {
+    const auto* banner = findBanner(bannerId);
+    if (banner == nullptr) {
+        return errorJson("unknown_banner", "未知卡池");
+    }
+    if (fates < 0) {
+        return errorJson("invalid_exchange_count", "兑换数量不能小于 0");
+    }
+    const int totalCost = fates * wishCost_;
+    if (currency_ < totalCost) {
+        return errorJson("insufficient_currency", "星石不足，无法完成兑换");
+    }
+    currency_ -= totalCost;
+    mutableFateBalanceFor(*banner) += fates;
+    return responseWithState("\"resourcesUpdated\":true,\"exchangedFates\":" + std::to_string(fates)
+        + ",\"fateName\":\"" + escapeJson(fateNameFor(*banner)) + "\",");
 }
 
 std::string AppController::setPathJson(const std::string& bannerId, const std::string& itemId) {
@@ -261,6 +329,8 @@ std::string AppController::resetJson() {
         states_.emplace(entry.first, WishState{});
     }
     currency_ = 16000;
+    eventFates_ = 0;
+    standardFates_ = 0;
     return responseWithState("\"reset\":true,");
 }
 
@@ -335,10 +405,14 @@ int main() {
             response = gacha::httpResponse(200, "OK", "application/json; charset=utf-8", app.stateJson());
         } else if (method == "POST" && path == "/api/wish") {
             response = gacha::httpResponse(200, "OK", "application/json; charset=utf-8",
-                app.wishJson(gacha::jsonStringField(body, "bannerId"), gacha::jsonIntField(body, "count").value_or(0)));
+                app.wishJson(gacha::jsonStringField(body, "bannerId"), gacha::jsonIntField(body, "count").value_or(0),
+                    gacha::jsonBoolField(body, "allowCurrencyTopUp")));
         } else if (method == "POST" && path == "/api/resources") {
             response = gacha::httpResponse(200, "OK", "application/json; charset=utf-8",
                 app.setCurrencyJson(gacha::jsonIntField(body, "currency").value_or(-1)));
+        } else if (method == "POST" && path == "/api/exchange") {
+            response = gacha::httpResponse(200, "OK", "application/json; charset=utf-8",
+                app.exchangeFatesJson(gacha::jsonStringField(body, "bannerId"), gacha::jsonIntField(body, "fates").value_or(-1)));
         } else if (method == "POST" && path == "/api/path") {
             response = gacha::httpResponse(200, "OK", "application/json; charset=utf-8",
                 app.setPathJson(gacha::jsonStringField(body, "bannerId"), gacha::jsonStringField(body, "itemId")));

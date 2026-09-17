@@ -7,22 +7,34 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <main class="app-shell">
+  <section id="login-screen" class="login-screen" aria-labelledby="login-title">
+    <div class="login-panel">
+      <h1 id="login-title">抽卡模拟器</h1>
+      <p>输入 9 位 UID 后进入本地模拟器。</p>
+      <label for="uid-input">用户 UID</label>
+      <input id="uid-input" type="text" inputmode="numeric" maxlength="9" autocomplete="off" placeholder="请输入 9 位数字">
+      <button id="enter-button" class="primary-button" type="button" disabled>进入</button>
+      <div id="login-message" class="message" role="status">UID 必须为 9 位数字</div>
+    </div>
+  </section>
+
+  <main id="simulator-app" class="app-shell hidden" aria-hidden="true">
     <header class="topbar">
       <div>
         <h1>抽卡模拟器</h1>
-        <p id="banner-subtitle">本地规则模拟</p>
+        <p><span id="banner-subtitle">本地规则模拟</span><span id="uid-display" class="uid-display"></span></p>
       </div>
       <button id="reset-button" class="ghost-button" type="button">重置</button>
     </header>
 
     <nav id="banner-tabs" class="tabs" aria-label="卡池选择"></nav>
 
+    <section id="wish-view" class="view-section">
     <section class="wish-layout">
       <section class="wish-panel" aria-labelledby="current-banner-name">
         <div class="banner-heading">
           <div>
-            <h2 id="current-banner-name">加载中</h2>
+            <h2><span id="current-banner-name">加载中</span><span id="pool-type-badge" class="pool-type">卡池</span></h2>
             <p id="featured-line">读取卡池配置...</p>
           </div>
           <div id="guarantee-badge" class="badge">保底状态</div>
@@ -40,10 +52,13 @@
             <button id="resource-button" class="ghost-button" type="button">应用</button>
           </div>
           <div class="resource-summary">
-            <span>当前：<strong id="resource-balance">0</strong></span>
-            <span>可抽：<strong id="affordable-wishes">0</strong></span>
+            <span>星石：<strong id="resource-balance">0</strong></span>
+            <span>星轨之缘：<strong id="event-fate-balance">0</strong></span>
+            <span>恒辉之缘：<strong id="standard-fate-balance">0</strong></span>
+            <span>总可抽：<strong id="affordable-wishes">0</strong></span>
             <span>160 / 抽</span>
           </div>
+          <button id="exchange-button" class="exchange-button" type="button">兑换缘券</button>
         </div>
 
         <div class="pity-grid">
@@ -78,21 +93,58 @@
       </section>
     </section>
 
-    <section class="dashboard">
-      <section class="stats-panel" aria-labelledby="stats-title">
-        <h2 id="stats-title">统计</h2>
-        <div id="stats" class="stats-grid"></div>
-      </section>
-
-      <section class="history-panel" aria-labelledby="history-title">
-        <div class="section-head">
-          <h2 id="history-title">历史</h2>
-          <span id="history-count">0 条</span>
-        </div>
-        <div id="history" class="history-list empty">暂无历史</div>
+      <section class="page-jump" aria-label="页面跳转">
+        <button id="open-stats" class="ghost-button nav-button" type="button">查看统计</button>
+        <button id="open-history" class="ghost-button nav-button" type="button">查看历史</button>
       </section>
     </section>
+
+    <section id="stats-view" class="page-panel hidden" aria-labelledby="stats-title">
+      <div class="section-head">
+        <h2 id="stats-title">统计</h2>
+        <button class="ghost-button back-button" type="button" data-view="wish">返回抽卡</button>
+      </div>
+      <div id="stats" class="stats-grid"></div>
+    </section>
+
+    <section id="history-view" class="page-panel hidden" aria-labelledby="history-title">
+      <div class="section-head">
+        <h2 id="history-title">历史</h2>
+        <div class="page-head-actions">
+          <span id="history-count">0 条</span>
+          <button class="ghost-button back-button" type="button" data-view="wish">返回抽卡</button>
+        </div>
+      </div>
+      <div id="history" class="history-list empty">暂无历史</div>
+    </section>
   </main>
+
+  <div id="exchange-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="exchange-title">
+    <div class="modal-card">
+      <h2 id="exchange-title">兑换缘券</h2>
+      <p id="exchange-copy">拖动选择兑换数量。</p>
+      <input id="exchange-range" type="range" min="0" max="0" value="0">
+      <div class="exchange-readout">
+        <strong id="exchange-count">0</strong>
+        <span id="exchange-cost">消耗 0 星石</span>
+      </div>
+      <div class="modal-actions">
+        <button id="exchange-cancel" class="ghost-button" type="button">取消</button>
+        <button id="exchange-confirm" class="primary-button" type="button">确认兑换</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="topup-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="topup-title">
+    <div class="modal-card">
+      <h2 id="topup-title">缘券不足</h2>
+      <p id="topup-copy">还差 0 个缘券，需要补充 0 星石。</p>
+      <div class="modal-actions">
+        <button id="topup-cancel" class="ghost-button" type="button">取消</button>
+        <button id="topup-confirm" class="primary-button" type="button">确认</button>
+      </div>
+    </div>
+  </div>
 
   <script src="/app.js"></script>
 </body>
