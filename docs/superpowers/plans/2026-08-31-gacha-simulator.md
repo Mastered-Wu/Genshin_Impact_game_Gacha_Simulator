@@ -400,7 +400,7 @@ git commit -m "feat: add gacha wish engine"
 **接口：**
 - 消耗：`WishEngine::wish`、`BannerConfig`、`WishState`、`DefaultRandom`
 - 产出：可执行文件 `gacha_server`
-- 产出：接口 `GET /api/state`、`POST /api/wish`、`POST /api/resources`、`POST /api/exchange`、`POST /api/path`
+- 产出：接口 `GET /api/state`、`POST /api/wish`、`POST /api/resources`、`POST /api/exchange`、`POST /api/path`、`POST /api/reset`
 - 产出：为 `/`、`/styles.css`、`/app.js` 提供静态文件服务
 
 - [ ] **步骤 1：编写失败的 API 冒烟测试**
@@ -416,6 +416,7 @@ public:
     std::string stateJson() const;
     std::string wishJson(const std::string& bannerId, int count);
     std::string setPathJson(const std::string& bannerId, const std::string& itemId);
+    std::string resetJson();
 };
 }
 ```
@@ -458,6 +459,7 @@ WishEngine engine_;
 - `stateJson()` 返回所有卡池和当前所有状态。
 - `wishJson()` 只接受抽卡次数 `1` 或 `10`；否则返回包含 `"code":"invalid_count"` 的 JSON。限定池优先消耗星轨之缘，常驻池优先消耗恒辉之缘，不足时可通过确认参数使用星石补足。
 - `setPathJson()` 只接受武器卡池，以及限定 5 星武器中的物品 id；更改或清除定轨会重置命定值。
+- `resetJson()` 将所有状态和资源恢复为默认值。
 
 `main.cpp` 应在从仓库根目录运行时，或从可执行文件相对路径运行时，提供 `../frontend` 下的静态文件。启动时应打印 `http://127.0.0.1:18080`。
 
@@ -509,6 +511,7 @@ git commit -m "feat: add local gacha API server"
 - 消耗：`GET /api/state`
 - 消耗：`POST /api/wish`
 - 消耗：`POST /api/path`
+- 消耗：`POST /api/reset`
 - 消耗：`POST /api/exchange`
 - 产出：可在浏览器中使用的中文模拟器。
 
@@ -531,6 +534,7 @@ git commit -m "feat: add local gacha API server"
 async function loadState()
 async function performWish(count)
 async function updatePath(itemId)
+async function resetSimulator(showResult)
 function render()
 function renderBannerOptions()
 function renderCurrentBanner()
@@ -617,6 +621,7 @@ Invoke-RestMethod -Method Post -ContentType 'application/json' -Body '{"bannerId
 - 单抽会新增一条最新结果和一条历史记录。
 - 十连会新增十条最新结果。
 - 武器定轨选择器只在武器卡池显示。
+- 进入 UID 后状态为默认值，点击重置会清空计数器和历史。
 
 - [ ] **步骤 5：只修复验证中发现的集成缺陷**
 

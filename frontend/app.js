@@ -67,13 +67,14 @@ async function enterSimulator() {
   }
 
   $("enter-button").disabled = true;
-  $("login-message").textContent = "正在加载模拟器...";
+  $("login-message").textContent = "正在初始化模拟器...";
   state.uid = uid;
   state.currentBannerId = "character-event";
   state.latestResults = [];
   state.pendingTopUp = null;
   state.activeView = "wish";
-  if (!await loadState()) {
+  const initialized = await resetSimulator(false);
+  if (!initialized) {
     $("login-message").textContent = "无法加载模拟器，请确认本地服务正在运行";
     $("enter-button").disabled = false;
     return;
@@ -195,6 +196,35 @@ async function updatePath(itemId) {
   }
 }
 
+async function resetSimulator(showResult = true) {
+  setLoading(true);
+  try {
+    const data = await requestJson("/api/reset", {
+      method: "POST",
+      body: "{}",
+    });
+    if (data.code) {
+      showMessage(data.error || "重置失败");
+      return false;
+    }
+    state.currentBannerId = "character-event";
+    state.latestResults = [];
+    state.pendingTopUp = null;
+    state.activeView = "wish";
+    applyServerState(data);
+    render();
+    if (showResult) {
+      showMessage("已恢复默认状态");
+    }
+    return true;
+  } catch (error) {
+    showMessage("重置失败");
+    return false;
+  } finally {
+    setLoading(false);
+  }
+}
+
 function applyServerState(data) {
   state.banners = data.banners || state.banners;
   state.states = data.states || state.states;
@@ -209,6 +239,7 @@ function setLoading(loading) {
   [
     "wish-one",
     "wish-ten",
+    "reset-button",
     "path-select",
     "resource-input",
     "resource-button",
@@ -523,6 +554,7 @@ $("uid-input").addEventListener("keydown", (event) => {
   }
 });
 $("enter-button").addEventListener("click", enterSimulator);
+$("reset-button").addEventListener("click", () => resetSimulator(true));
 $("resource-button").addEventListener("click", updateResources);
 $("exchange-button").addEventListener("click", openExchangeModal);
 $("exchange-range").addEventListener("input", updateExchangeRange);

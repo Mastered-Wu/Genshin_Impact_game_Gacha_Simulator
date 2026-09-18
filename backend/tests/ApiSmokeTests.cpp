@@ -81,6 +81,21 @@ static void standard_banner_uses_separate_fates() {
     require(standardWish.find("\"standardFates\":0") != std::string::npos, "standard wish should deduct standard fate");
 }
 
+static void reset_restores_default_state() {
+    AppController app;
+
+    app.setCurrencyJson(0);
+    app.exchangeFatesJson("character-event", 1);
+    app.wishJson("character-event", 1);
+
+    auto reset = app.resetJson();
+    require(reset.find("\"reset\":true") != std::string::npos, "reset should report success");
+    require(reset.find("\"currency\":16000") != std::string::npos, "reset should restore default currency");
+    require(reset.find("\"eventFates\":0") != std::string::npos, "reset should clear event fates");
+    require(reset.find("\"standardFates\":0") != std::string::npos, "reset should clear standard fates");
+    require(reset.find("\"history\":[]") != std::string::npos, "reset should clear wish history");
+}
+
 int main() {
     try {
         default_state_contains_three_banners();
@@ -88,6 +103,7 @@ int main() {
         resources_gate_wishes_and_deduct_cost();
         exchange_adds_fates_and_wishes_use_fates_first();
         standard_banner_uses_separate_fates();
+        reset_restores_default_state();
     } catch (const std::exception& ex) {
         std::cerr << "FAIL: " << ex.what() << '\n';
         return EXIT_FAILURE;

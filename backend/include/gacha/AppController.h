@@ -30,6 +30,9 @@ public:
     // 设置武器定轨。只有武器活动池允许设置，变更或清空定轨时重置命定值。
     std::string setPathJson(const std::string& bannerId, const std::string& itemId);
 
+    // 重置所有卡池状态和玩家资源，配置不变。
+    std::string resetJson();
+
 private:
     const BannerConfig* findBanner(const std::string& bannerId) const;
     WishState* findState(const std::string& bannerId);
