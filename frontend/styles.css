@@ -300,10 +300,31 @@ h2 .pool-type {
 
 .resource-summary {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: 8px 14px;
   color: var(--muted);
   font-size: 14px;
+}
+
+.resource-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  white-space: nowrap;
+}
+
+.resource-item-text {
+  padding-left: 2px;
+}
+
+.resource-icon {
+  display: block;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex: 0 0 32px;
 }
 
 .resource-summary strong {

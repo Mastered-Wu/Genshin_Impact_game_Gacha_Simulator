@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="46%" r="50%">
+      <stop offset="0%" stop-color="#8deaff" stop-opacity="0.30"/>
+      <stop offset="45%" stop-color="#3fb8ea" stop-opacity="0.08"/>
+      <stop offset="80%" stop-color="#3fb8ea" stop-opacity="0.02"/>
+      <stop offset="100%" stop-color="#3fb8ea" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f7e7a8"/>
+      <stop offset="42%" stop-color="#dcb055"/>
+      <stop offset="78%" stop-color="#b07a26"/>
+      <stop offset="100%" stop-color="#8f5f18"/>
+    </linearGradient>
+    <linearGradient id="facetTop" x1="50%" y1="9%" x2="50%" y2="50%">
+      <stop offset="0%" stop-color="#f2fdff"/>
+      <stop offset="100%" stop-color="#a6e8ff"/>
+    </linearGradient>
+    <linearGradient id="facetRight" x1="60%" y1="40%" x2="92%" y2="56%">
+      <stop offset="0%" stop-color="#7cd8fb"/>
+      <stop offset="100%" stop-color="#2b8fd4"/>
+    </linearGradient>
+    <linearGradient id="facetBottom" x1="50%" y1="50%" x2="50%" y2="92%">
+      <stop offset="0%" stop-color="#2f86d8"/>
+      <stop offset="100%" stop-color="#12357e"/>
+    </linearGradient>
+    <linearGradient id="facetLeft" x1="8%" y1="50%" x2="50%" y2="50%">
+      <stop offset="0%" stop-color="#cdf3ff"/>
+      <stop offset="100%" stop-color="#5ab9e9"/>
+    </linearGradient>
+    <radialGradient id="core" cx="50%" cy="46%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="55%" stop-color="#bff0ff" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#7fdcff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softShadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#0a2748" flood-opacity="0.28"/>
+    </filter>
+    <clipPath id="gemClip">
+      <polygon points="256,48 300,212 464,256 300,300 256,464 212,300 48,256 212,212"/>
+    </clipPath>
+  </defs>
+
+  <!-- ambient glow -->
+  <circle cx="256" cy="246" r="205" fill="url(#glow)"/>
+
+  <g filter="url(#softShadow)">
+    <!-- gold rim (slightly larger star) -->
+    <polygon points="256,36 303,210 476,256 303,302 256,476 209,302 36,256 209,210"
+             fill="url(#gold)" stroke="#8a5c16" stroke-width="2" stroke-linejoin="round"/>
+
+    <!-- gem facets clipped to star shape -->
+    <g clip-path="url(#gemClip)">
+      <polygon points="256,256 300,212 256,48 212,212" fill="url(#facetTop)"/>
+      <polygon points="256,256 300,212 464,256 300,300" fill="url(#facetRight)"/>
+      <polygon points="256,256 300,300 256,464 212,300" fill="url(#facetBottom)"/>
+      <polygon points="256,256 212,300 48,256 212,212" fill="url(#facetLeft)"/>
+
+      <!-- center light -->
+      <circle cx="256" cy="248" r="96" fill="url(#core)"/>
+
+      <!-- facet cuts -->
+      <g stroke="#e8faff" stroke-width="2.4" stroke-linejoin="round" opacity="0.55">
+        <line x1="256" y1="256" x2="256" y2="48"/>
+        <line x1="256" y1="256" x2="464" y2="256"/>
+        <line x1="256" y1="256" x2="256" y2="464"/>
+        <line x1="256" y1="256" x2="48" y2="256"/>
+      </g>
+      <g stroke="#0e3c86" stroke-width="2" stroke-linejoin="round" opacity="0.28">
+        <line x1="256" y1="256" x2="300" y2="212"/>
+        <line x1="256" y1="256" x2="300" y2="300"/>
+        <line x1="256" y1="256" x2="212" y2="300"/>
+        <line x1="256" y1="256" x2="212" y2="212"/>
+      </g>
+    </g>
+
+    <!-- crisp edge -->
+    <polygon points="256,48 300,212 464,256 300,300 256,464 212,300 48,256 212,212"
+             fill="none" stroke="#f3d98c" stroke-width="3" stroke-linejoin="round" opacity="0.9"/>
+
+    <!-- sparkles -->
+    <path d="M222 176 l10 26 26 10 -26 10 -10 26 -10 -26 -26 -10 26 -10 z"
+          fill="#ffffff" opacity="0.95"/>
+    <path d="M312 148 l5 13 13 5 -13 5 -5 13 -5 -13 -13 -5 13 -5 z"
+          fill="#eafaff" opacity="0.85"/>
+  </g>
+</svg>

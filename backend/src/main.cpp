@@ -127,7 +127,7 @@ std::filesystem::path frontendRoot() {
     return fromRoot;
 }
 
-// 读取静态文件内容，用于返回 index.html、styles.css 和 app.js。
+// 读取静态文件内容，用于返回页面、样式、脚本和本地图片资源。
 std::string readTextFile(const std::filesystem::path& path) {
     std::ifstream file(path, std::ios::binary);
     if (!file) {
@@ -145,6 +145,12 @@ std::string contentTypeFor(const std::string& path) {
     }
     if (path.size() >= 3 && path.substr(path.size() - 3) == ".js") {
         return "application/javascript; charset=utf-8";
+    }
+    if (path.size() >= 4 && path.substr(path.size() - 4) == ".svg") {
+        return "image/svg+xml";
+    }
+    if (path.size() >= 4 && path.substr(path.size() - 4) == ".png") {
+        return "image/png";
     }
     return "text/html; charset=utf-8";
 }

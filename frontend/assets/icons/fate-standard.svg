@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="46%" r="50%">
+      <stop offset="0%" stop-color="#bfe6ff" stop-opacity="0.30"/>
+      <stop offset="45%" stop-color="#6fb6ec" stop-opacity="0.08"/>
+      <stop offset="80%" stop-color="#6fb6ec" stop-opacity="0.02"/>
+      <stop offset="100%" stop-color="#6fb6ec" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="silverRim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="42%" stop-color="#c3d8ef"/>
+      <stop offset="78%" stop-color="#7b9cc4"/>
+      <stop offset="100%" stop-color="#55749c"/>
+    </linearGradient>
+    <linearGradient id="sLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#cfe9fb"/>
+    </linearGradient>
+    <linearGradient id="sMid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#dcedfa"/>
+      <stop offset="100%" stop-color="#8fbce4"/>
+    </linearGradient>
+    <linearGradient id="sDeep" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7fb0dc"/>
+      <stop offset="100%" stop-color="#35639f"/>
+    </linearGradient>
+    <linearGradient id="ringSilver" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#88a9cf"/>
+      <stop offset="35%" stop-color="#f4faff"/>
+      <stop offset="65%" stop-color="#f4faff"/>
+      <stop offset="100%" stop-color="#88a9cf"/>
+    </linearGradient>
+    <radialGradient id="core" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.92"/>
+      <stop offset="60%" stop-color="#dcf1ff" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#bfe4ff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softShadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#0d2b4d" flood-opacity="0.26"/>
+    </filter>
+    <clipPath id="sparkClip">
+      <polygon points="256,128 300,206 378,250 300,294 256,372 212,294 134,250 212,206"/>
+    </clipPath>
+  </defs>
+
+  <!-- ambient glow -->
+  <circle cx="256" cy="246" r="205" fill="url(#glow)"/>
+
+  <g filter="url(#softShadow)">
+    <!-- talisman ring -->
+    <circle cx="256" cy="250" r="158" fill="none" stroke="url(#ringSilver)" stroke-width="9"/>
+    <circle cx="256" cy="250" r="146" fill="none" stroke="#dcecfb" stroke-width="2" opacity="0.8"/>
+    <g stroke="url(#ringSilver)" stroke-width="5" stroke-linecap="round">
+      <g transform="rotate(0 256 250)"><line x1="256" y1="80" x2="256" y2="94"/></g>
+      <g transform="rotate(45 256 250)"><line x1="256" y1="80" x2="256" y2="94"/></g>
+      <g transform="rotate(90 256 250)"><line x1="256" y1="80" x2="256" y2="94"/></g>
+      <g transform="rotate(135 256 250)"><line x1="256" y1="80" x2="256" y2="94"/></g>
+      <g transform="rotate(180 256 250)"><line x1="256" y1="80" x2="256" y2="94"/></g>
+      <g transform="rotate(225 256 250)"><line x1="256" y1="80" x2="256" y2="94"/></g>
+      <g transform="rotate(270 256 250)"><line x1="256" y1="80" x2="256" y2="94"/></g>
+      <g transform="rotate(315 256 250)"><line x1="256" y1="80" x2="256" y2="94"/></g>
+    </g>
+
+    <!-- silver rim star -->
+    <polygon points="256,120.7 302.6,203.4 385.7,250 302.6,296.6 256,379.3 209.4,296.6 126.3,250 209.4,203.4"
+             fill="url(#silverRim)" stroke="#4f6f97" stroke-width="2" stroke-linejoin="round"/>
+
+    <!-- faceted star -->
+    <g clip-path="url(#sparkClip)">
+      <polygon points="256,250 256,128 300,206" fill="url(#sLight)"/>
+      <polygon points="256,250 300,206 378,250" fill="url(#sMid)"/>
+      <polygon points="256,250 378,250 300,294" fill="url(#sDeep)"/>
+      <polygon points="256,250 300,294 256,372" fill="url(#sMid)"/>
+      <polygon points="256,250 256,372 212,294" fill="url(#sDeep)"/>
+      <polygon points="256,250 212,294 134,250" fill="url(#sMid)"/>
+      <polygon points="256,250 134,250 212,206" fill="url(#sLight)"/>
+      <polygon points="256,250 212,206 256,128" fill="url(#sMid)"/>
+
+      <circle cx="256" cy="244" r="80" fill="url(#core)"/>
+
+      <g stroke="#ffffff" stroke-width="2.2" opacity="0.55">
+        <line x1="256" y1="250" x2="256" y2="128"/>
+        <line x1="256" y1="250" x2="378" y2="250"/>
+        <line x1="256" y1="250" x2="256" y2="372"/>
+        <line x1="256" y1="250" x2="134" y2="250"/>
+      </g>
+    </g>
+
+    <!-- crisp edge -->
+    <polygon points="256,128 300,206 378,250 300,294 256,372 212,294 134,250 212,206"
+             fill="none" stroke="#eaf5ff" stroke-width="3" stroke-linejoin="round" opacity="0.9"/>
+
+    <!-- center diamond -->
+    <polygon points="256,222 284,250 256,278 228,250"
+             fill="#ffffff" stroke="#9fc3e6" stroke-width="2.5" stroke-linejoin="round"/>
+
+    <!-- sparkles -->
+    <path d="M330 166 l7 18 18 7 -18 7 -7 18 -7 -18 -18 -7 18 -7 z" fill="#ffffff" opacity="0.92"/>
+    <path d="M176 322 l5 12 12 5 -12 5 -5 12 -5 -12 -12 -5 12 -5 z" fill="#e8f5ff" opacity="0.8"/>
+  </g>
+</svg>

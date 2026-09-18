@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="46%" r="50%">
+      <stop offset="0%" stop-color="#ffe6a8" stop-opacity="0.34"/>
+      <stop offset="45%" stop-color="#f3b94d" stop-opacity="0.09"/>
+      <stop offset="80%" stop-color="#f3b94d" stop-opacity="0.02"/>
+      <stop offset="100%" stop-color="#f3b94d" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="goldRim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff0bd"/>
+      <stop offset="40%" stop-color="#e3b35c"/>
+      <stop offset="75%" stop-color="#b5761f"/>
+      <stop offset="100%" stop-color="#8d5713"/>
+    </linearGradient>
+    <linearGradient id="gLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff8dd"/>
+      <stop offset="100%" stop-color="#f2c766"/>
+    </linearGradient>
+    <linearGradient id="gMid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffd98a"/>
+      <stop offset="100%" stop-color="#d99a35"/>
+    </linearGradient>
+    <linearGradient id="gDeep" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e2a545"/>
+      <stop offset="100%" stop-color="#a96d17"/>
+    </linearGradient>
+    <linearGradient id="gRose" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe9c9"/>
+      <stop offset="100%" stop-color="#e8a85e"/>
+    </linearGradient>
+    <linearGradient id="ringGold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c99438"/>
+      <stop offset="35%" stop-color="#f6d98a"/>
+      <stop offset="65%" stop-color="#f6d98a"/>
+      <stop offset="100%" stop-color="#c99438"/>
+    </linearGradient>
+    <radialGradient id="core" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="55%" stop-color="#fff2c8" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#ffe6a0" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softShadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#4a2c05" flood-opacity="0.26"/>
+    </filter>
+    <clipPath id="starClip">
+      <polygon points="256,80 297.1,191.4 415.8,196.1 322.6,269.6 354.8,383.9 256,318 157.2,383.9 189.4,269.6 96.2,196.1 214.9,191.4"/>
+    </clipPath>
+  </defs>
+
+  <!-- ambient glow -->
+  <circle cx="256" cy="246" r="205" fill="url(#glow)"/>
+
+  <g filter="url(#softShadow)">
+    <!-- orbiting star track -->
+    <g transform="rotate(-18 256 250)">
+      <ellipse cx="256" cy="250" rx="190" ry="62" fill="none" stroke="url(#ringGold)" stroke-width="7" opacity="0.95"/>
+      <ellipse cx="256" cy="247.5" rx="190" ry="60" fill="none" stroke="#fff7e0" stroke-width="2" opacity="0.55"/>
+      <circle cx="66" cy="250" r="6" fill="#e8b35a" stroke="#a66d1a" stroke-width="1.5"/>
+      <path d="M446 232 l8 20 20 8 -20 8 -8 20 -8 -20 -20 -8 20 -8 z" fill="#fff3cf" stroke="#d99a35" stroke-width="2" stroke-linejoin="round"/>
+    </g>
+
+    <!-- gold rim star -->
+    <polygon points="256,68 300,187.4 427,192.5 327.2,271.1 361.7,393.4 256,322.9 150.3,393.4 184.8,271.1 85,192.5 212,187.4"
+             fill="url(#goldRim)" stroke="#8a5a14" stroke-width="2" stroke-linejoin="round"/>
+
+    <!-- faceted star -->
+    <g clip-path="url(#starClip)">
+      <polygon points="256,248 256,80 297.1,191.4" fill="url(#gLight)"/>
+      <polygon points="256,248 297.1,191.4 415.8,196.1" fill="url(#gRose)"/>
+      <polygon points="256,248 415.8,196.1 322.6,269.6" fill="url(#gMid)"/>
+      <polygon points="256,248 322.6,269.6 354.8,383.9" fill="url(#gDeep)"/>
+      <polygon points="256,248 354.8,383.9 256,318" fill="url(#gMid)"/>
+      <polygon points="256,248 256,318 157.2,383.9" fill="url(#gDeep)"/>
+      <polygon points="256,248 157.2,383.9 189.4,269.6" fill="url(#gRose)"/>
+      <polygon points="256,248 189.4,269.6 96.2,196.1" fill="url(#gMid)"/>
+      <polygon points="256,248 96.2,196.1 214.9,191.4" fill="url(#gLight)"/>
+      <polygon points="256,248 214.9,191.4 256,80" fill="url(#gRose)"/>
+
+      <circle cx="256" cy="240" r="88" fill="url(#core)"/>
+
+      <!-- facet cuts -->
+      <g stroke="#fff6dd" stroke-width="2.2" opacity="0.5">
+        <line x1="256" y1="248" x2="256" y2="80"/>
+        <line x1="256" y1="248" x2="415.8" y2="196.1"/>
+        <line x1="256" y1="248" x2="354.8" y2="383.9"/>
+        <line x1="256" y1="248" x2="157.2" y2="383.9"/>
+        <line x1="256" y1="248" x2="96.2" y2="196.1"/>
+      </g>
+    </g>
+
+    <!-- crisp edge -->
+    <polygon points="256,80 297.1,191.4 415.8,196.1 322.6,269.6 354.8,383.9 256,318 157.2,383.9 189.4,269.6 96.2,196.1 214.9,191.4"
+             fill="none" stroke="#fbe9b2" stroke-width="3" stroke-linejoin="round" opacity="0.9"/>
+
+    <!-- sparkles -->
+    <path d="M300 158 l9 23 23 9 -23 9 -9 23 -9 -23 -23 -9 23 -9 z" fill="#ffffff" opacity="0.95"/>
+    <path d="M206 330 l5 13 13 5 -13 5 -5 13 -5 -13 -13 -5 13 -5 z" fill="#fff8e2" opacity="0.85"/>
+  </g>
+</svg>
