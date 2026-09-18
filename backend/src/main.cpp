@@ -2,6 +2,7 @@
 #include "gacha/Json.h"
 
 #include <algorithm>
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -381,7 +382,28 @@ int main() {
     gacha::AppController app;
     std::cout << "Gacha simulator running at http://127.0.0.1:18080\n";
 
+    bool shutdownScheduled = false;
+    auto shutdownDeadline = std::chrono::steady_clock::time_point{};
+
     while (true) {
+        if (shutdownScheduled && std::chrono::steady_clock::now() >= shutdownDeadline) {
+            break;
+        }
+
+        fd_set readSet;
+        FD_ZERO(&readSet);
+        FD_SET(serverSocket, &readSet);
+        timeval timeout{};
+        timeout.tv_sec = 0;
+        timeout.tv_usec = 250000;
+        const int ready = select(0, &readSet, nullptr, nullptr, &timeout);
+        if (ready == SOCKET_ERROR) {
+            continue;
+        }
+        if (ready == 0) {
+            continue;
+        }
+
         // 这个服务器是单线程、短连接模型：接收一个请求，生成响应，然后关闭连接。
         SOCKET client = accept(serverSocket, nullptr, nullptr);
         if (client == INVALID_SOCKET) {
@@ -424,6 +446,13 @@ int main() {
                 app.setPathJson(gacha::jsonStringField(body, "bannerId"), gacha::jsonStringField(body, "itemId")));
         } else if (method == "POST" && path == "/api/reset") {
             response = gacha::httpResponse(200, "OK", "application/json; charset=utf-8", app.resetJson());
+        } else if (method == "POST" && path == "/api/shutdown") {
+            shutdownScheduled = true;
+            shutdownDeadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+            response = gacha::httpResponse(200, "OK", "application/json; charset=utf-8", "{\"shutdownScheduled\":true}");
+        } else if (method == "POST" && path == "/api/cancel-shutdown") {
+            shutdownScheduled = false;
+            response = gacha::httpResponse(200, "OK", "application/json; charset=utf-8", "{\"shutdownScheduled\":false}");
         } else {
             std::string filePath = path == "/" ? "/index.html" : path;
             if (filePath.find("..") != std::string::npos) {

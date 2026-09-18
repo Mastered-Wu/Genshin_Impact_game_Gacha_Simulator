@@ -12,6 +12,19 @@ const state = {
 
 const $ = (id) => document.getElementById(id);
 
+function postLifecycleSignal(url) {
+  if (navigator.sendBeacon) {
+    navigator.sendBeacon(url, new Blob(["{}"], { type: "application/json" }));
+    return;
+  }
+  fetch(url, {
+    method: "POST",
+    body: "{}",
+    keepalive: true,
+    headers: { "Content-Type": "application/json" },
+  }).catch(() => {});
+}
+
 async function requestJson(url, options = {}) {
   const response = await fetch(url, {
     headers: { "Content-Type": "application/json" },
@@ -544,5 +557,7 @@ $("resource-input").addEventListener("keydown", (event) => {
   }
 });
 $("path-select").addEventListener("change", (event) => updatePath(event.target.value));
+window.addEventListener("pagehide", () => postLifecycleSignal("/api/shutdown"));
 
+postLifecycleSignal("/api/cancel-shutdown");
 handleUidInput();

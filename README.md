@@ -66,6 +66,7 @@ http://127.0.0.1:18080
 - `POST /api/exchange`，请求示例：`{ "bannerId": "character-event", "fates": 10 }`
 - `POST /api/path`，请求示例：`{ "bannerId": "weapon-event", "itemId": "weapon-a" }`
 - `POST /api/reset`
+- `POST /api/shutdown` / `POST /api/cancel-shutdown`，供页面关闭时自动停止本地服务，刷新页面时会取消关闭。
 
 角色/武器限定池会优先消耗星轨之缘，常驻池会优先消耗恒辉之缘；不足时可用 `allowCurrencyTopUp: true` 确认按 160 星石一抽补足。错误响应包含稳定的 `code` 字段，例如 `unknown_banner`、`invalid_count`、`invalid_path_item`、`invalid_currency`、`invalid_exchange_count`、`need_currency_confirm`、`insufficient_currency`。
 
