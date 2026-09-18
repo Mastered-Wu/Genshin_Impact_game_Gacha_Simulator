@@ -48,12 +48,33 @@ async function enterSimulator() {
     return;
   }
 
-  state.uid = uid;
-  $("uid-display").textContent = `UID ${uid}`;
-  $("login-screen").classList.add("hidden");
-  $("simulator-app").classList.remove("hidden");
-  $("simulator-app").setAttribute("aria-hidden", "false");
-  await loadState();
+  $("enter-button").disabled = true;
+  $("login-message").textContent = "正在初始化本次模拟状态...";
+  try {
+    const data = await requestJson("/api/reset", {
+      method: "POST",
+      body: "{}",
+    });
+    if (data.code) {
+      throw new Error(data.error || "初始化失败");
+    }
+
+    state.uid = uid;
+    state.currentBannerId = "character-event";
+    state.latestResults = [];
+    state.pendingTopUp = null;
+    state.activeView = "wish";
+    applyServerState(data);
+    $("uid-display").textContent = `UID ${uid}`;
+    $("login-screen").classList.add("hidden");
+    $("simulator-app").classList.remove("hidden");
+    $("simulator-app").setAttribute("aria-hidden", "false");
+    render();
+    showMessage("已为本次 UID 初始化默认状态");
+  } catch (error) {
+    $("login-message").textContent = "无法初始化模拟器，请确认本地服务正在运行";
+    $("enter-button").disabled = false;
+  }
 }
 
 function isValidUid(uid) {
