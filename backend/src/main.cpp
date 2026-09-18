@@ -213,7 +213,7 @@ std::string AppController::fateNameFor(const BannerConfig& banner) const {
 }
 
 std::string AppController::responseWithState(const std::string& prefix) const {
-    // 操作接口会通过 prefix 塞入 results/bannerId/reset，再统一带上完整状态。
+    // 操作接口会通过 prefix 塞入 results/bannerId 等字段，再统一带上完整状态。
     std::ostringstream out;
     out << "{" << prefix
         << "\"banners\":" << bannersArrayJson(banners_)
@@ -330,17 +330,6 @@ std::string AppController::setPathJson(const std::string& bannerId, const std::s
     return responseWithState("\"bannerId\":\"" + escapeJson(bannerId) + "\",");
 }
 
-std::string AppController::resetJson() {
-    states_.clear();
-    for (const auto& entry : banners_) {
-        states_.emplace(entry.first, WishState{});
-    }
-    currency_ = 16000;
-    eventFates_ = 0;
-    standardFates_ = 0;
-    return responseWithState("\"reset\":true,");
-}
-
 }
 
 #ifndef GACHA_TESTING
@@ -444,8 +433,6 @@ int main() {
         } else if (method == "POST" && path == "/api/path") {
             response = gacha::httpResponse(200, "OK", "application/json; charset=utf-8",
                 app.setPathJson(gacha::jsonStringField(body, "bannerId"), gacha::jsonStringField(body, "itemId")));
-        } else if (method == "POST" && path == "/api/reset") {
-            response = gacha::httpResponse(200, "OK", "application/json; charset=utf-8", app.resetJson());
         } else if (method == "POST" && path == "/api/shutdown") {
             shutdownScheduled = true;
             shutdownDeadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);

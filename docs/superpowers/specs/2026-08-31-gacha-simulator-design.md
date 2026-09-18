@@ -103,7 +103,6 @@ C++ 后端负责所有祈愿规则和持久化会话状态。后端暴露一个�
 - `POST /api/resources`：接收 `{ "currency": 1600 }`，更新玩家当前可用星石。
 - `POST /api/exchange`：接收 `{ "bannerId": "character-event", "fates": 10 }`，按 160 星石兑换 1 个当前卡池对应缘券。
 - `POST /api/path`：接收 `{ "bannerId": "weapon-event", "itemId": "weapon-a" }` 或 `{ "bannerId": "weapon-event", "itemId": null }`，更新武器定轨，并在定轨变化时重置命定值。
-- `POST /api/reset`：重置模拟器状态，便于本地测试。
 
 错误响应使用 JSON，包含 `error` 字符串和稳定的 `code`，例如 `unknown_banner`、`invalid_count`、`invalid_path_item`、`invalid_currency`、`invalid_exchange_count`、`need_currency_confirm` 或 `insufficient_currency`。
 
@@ -111,7 +110,7 @@ C++ 后端负责所有祈愿规则和持久化会话状态。后端暴露一个�
 
 按用户后续变更，网页第一屏为 UID 登录界面。UID 必须为 9 位数字，校验通过后显示可用模拟器；该登录仅作为本地前端入口门槛，不引入账号系统或远程认证。模拟器界面应包含：
 
-- 紧凑的顶部栏，包含卡池选择和重置操作。
+- 紧凑的顶部栏，包含卡池选择和当前 UID 信息。
 - 主祈愿面板，展示卡池名称、限定物品、保底计数、保底标签，以及相关场景下的命定值。
 - 资源输入区域，展示当前星石、星轨之缘、恒辉之缘和当前卡池总可抽次数，并提供滑条兑换窗口。
 - 对应缘券不足时，弹出确认窗口提示缺少数量和需要补充的星石数量。

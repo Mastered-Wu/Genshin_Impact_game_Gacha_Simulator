@@ -37,10 +37,15 @@ async function loadState() {
   setLoading(true);
   try {
     const data = await requestJson("/api/state");
+    if (data.code) {
+      throw new Error(data.error || "状态加载失败");
+    }
     applyServerState(data);
     render();
+    return true;
   } catch (error) {
     showMessage("无法连接本地服务");
+    return false;
   } finally {
     setLoading(false);
   }
@@ -62,32 +67,23 @@ async function enterSimulator() {
   }
 
   $("enter-button").disabled = true;
-  $("login-message").textContent = "正在初始化本次模拟状态...";
-  try {
-    const data = await requestJson("/api/reset", {
-      method: "POST",
-      body: "{}",
-    });
-    if (data.code) {
-      throw new Error(data.error || "初始化失败");
-    }
-
-    state.uid = uid;
-    state.currentBannerId = "character-event";
-    state.latestResults = [];
-    state.pendingTopUp = null;
-    state.activeView = "wish";
-    applyServerState(data);
-    $("uid-display").textContent = `UID ${uid}`;
-    $("login-screen").classList.add("hidden");
-    $("simulator-app").classList.remove("hidden");
-    $("simulator-app").setAttribute("aria-hidden", "false");
-    render();
-    showMessage("已为本次 UID 初始化默认状态");
-  } catch (error) {
-    $("login-message").textContent = "无法初始化模拟器，请确认本地服务正在运行";
+  $("login-message").textContent = "正在加载模拟器...";
+  state.uid = uid;
+  state.currentBannerId = "character-event";
+  state.latestResults = [];
+  state.pendingTopUp = null;
+  state.activeView = "wish";
+  if (!await loadState()) {
+    $("login-message").textContent = "无法加载模拟器，请确认本地服务正在运行";
     $("enter-button").disabled = false;
+    return;
   }
+
+  $("uid-display").textContent = `UID ${uid}`;
+  $("login-screen").classList.add("hidden");
+  $("simulator-app").classList.remove("hidden");
+  $("simulator-app").setAttribute("aria-hidden", "false");
+  showMessage("已加载本次模拟状态");
 }
 
 function isValidUid(uid) {
@@ -199,21 +195,6 @@ async function updatePath(itemId) {
   }
 }
 
-async function resetSimulator() {
-  setLoading(true);
-  try {
-    const data = await requestJson("/api/reset", { method: "POST", body: "{}" });
-    state.latestResults = [];
-    applyServerState(data);
-    render();
-    showMessage("已重置");
-  } catch (error) {
-    showMessage("重置失败");
-  } finally {
-    setLoading(false);
-  }
-}
-
 function applyServerState(data) {
   state.banners = data.banners || state.banners;
   state.states = data.states || state.states;
@@ -228,7 +209,6 @@ function setLoading(loading) {
   [
     "wish-one",
     "wish-ten",
-    "reset-button",
     "path-select",
     "resource-input",
     "resource-button",
@@ -543,7 +523,6 @@ $("uid-input").addEventListener("keydown", (event) => {
   }
 });
 $("enter-button").addEventListener("click", enterSimulator);
-$("reset-button").addEventListener("click", resetSimulator);
 $("resource-button").addEventListener("click", updateResources);
 $("exchange-button").addEventListener("click", openExchangeModal);
 $("exchange-range").addEventListener("input", updateExchangeRange);
