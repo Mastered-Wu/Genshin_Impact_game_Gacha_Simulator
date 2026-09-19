@@ -551,7 +551,42 @@ function poolTypeLabel(banner) {
 }
 
 function handleWishShortcut(event) {
-  if (event.repeat || state.loading || state.activeView !== "wish") {
+  if (event.repeat || state.loading) {
+    return;
+  }
+
+  const key = event.key.toLowerCase();
+  const visibleModal = ["exchange-modal", "topup-modal", "results-modal"]
+    .map((id) => $(id))
+    .find((modal) => modal && !modal.classList.contains("hidden"));
+
+  if (visibleModal) {
+    event.preventDefault();
+    if (key === "d") {
+      if (visibleModal.id === "exchange-modal") {
+        closeExchangeModal();
+      } else if (visibleModal.id === "topup-modal") {
+        closeTopUpModal();
+      } else {
+        closeResultsModal();
+      }
+    } else if (key === "f") {
+      if (visibleModal.id === "exchange-modal") {
+        $("exchange-confirm").click();
+      } else if (visibleModal.id === "topup-modal") {
+        $("topup-confirm").click();
+      } else {
+        $("results-close").click();
+      }
+    }
+    return;
+  }
+
+  if (state.activeView !== "wish") {
+    if (key === "d") {
+      event.preventDefault();
+      showView("wish");
+    }
     return;
   }
 
@@ -564,13 +599,6 @@ function handleWishShortcut(event) {
     return;
   }
 
-  if (!$("results-modal").classList.contains("hidden")
-    || !$("exchange-modal").classList.contains("hidden")
-    || !$("topup-modal").classList.contains("hidden")) {
-    return;
-  }
-
-  const key = event.key.toLowerCase();
   if (key === "d") {
     event.preventDefault();
     performWish(1);
