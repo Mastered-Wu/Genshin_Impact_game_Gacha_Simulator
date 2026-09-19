@@ -80,7 +80,6 @@ input {
 
 .topbar,
 .wish-panel,
-.results-panel,
 .page-panel {
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid var(--line);
@@ -215,13 +214,12 @@ h2 .pool-type {
 
 .wish-layout {
   display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
 }
 
 
 .wish-panel,
-.results-panel,
 .page-panel {
   padding: 18px;
 }
@@ -352,6 +350,20 @@ h2 .pool-type {
   border-radius: 8px;
   background: #fff;
   box-shadow: var(--shadow);
+}
+
+.results-modal-card {
+  width: min(760px, 100%);
+}
+
+.results-modal-card .results {
+  min-height: 180px;
+  max-height: min(58vh, 520px);
+  overflow: auto;
+}
+
+.results-modal-card .primary-button {
+  margin-top: 16px;
 }
 
 .modal-card p {

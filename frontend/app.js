@@ -111,6 +111,7 @@ async function performWish(count, allowCurrencyTopUp = false) {
     state.latestResults = data.results || [];
     applyServerState(data);
     render();
+    openResultsModal();
     showMessage(`${count === 1 ? "单抽" : "十连"}完成`);
   } catch (error) {
     showMessage("抽卡请求失败");
@@ -211,6 +212,7 @@ async function resetSimulator(showResult = true) {
     state.latestResults = [];
     state.pendingTopUp = null;
     state.activeView = "wish";
+    closeResultsModal();
     applyServerState(data);
     render();
     if (showResult) {
@@ -516,6 +518,14 @@ function closeTopUpModal() {
   $("topup-modal").classList.add("hidden");
 }
 
+function openResultsModal() {
+  $("results-modal").classList.remove("hidden");
+}
+
+function closeResultsModal() {
+  $("results-modal").classList.add("hidden");
+}
+
 async function confirmTopUpWish() {
   const pending = state.pendingTopUp;
   closeTopUpModal();
@@ -562,6 +572,7 @@ $("exchange-cancel").addEventListener("click", closeExchangeModal);
 $("exchange-confirm").addEventListener("click", exchangeFates);
 $("topup-cancel").addEventListener("click", closeTopUpModal);
 $("topup-confirm").addEventListener("click", confirmTopUpWish);
+$("results-close").addEventListener("click", closeResultsModal);
 $("resource-input").addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     updateResources();

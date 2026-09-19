@@ -92,14 +92,6 @@
 
         <div id="message" class="message" role="status"></div>
       </section>
-
-      <section class="results-panel" aria-labelledby="results-title">
-        <div class="section-head">
-          <h2 id="results-title">最新结果</h2>
-          <span id="result-count">0 条</span>
-        </div>
-        <div id="results" class="results empty">暂无结果</div>
-      </section>
     </section>
 
       <section class="page-jump" aria-label="页面跳转">
@@ -152,6 +144,17 @@
         <button id="topup-cancel" class="ghost-button" type="button">取消</button>
         <button id="topup-confirm" class="primary-button" type="button">确认</button>
       </div>
+    </div>
+  </div>
+
+  <div id="results-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="results-title">
+    <div class="modal-card results-modal-card">
+      <div class="section-head">
+        <h2 id="results-title">最新结果</h2>
+        <span id="result-count">0 条</span>
+      </div>
+      <div id="results" class="results empty">暂无结果</div>
+      <button id="results-close" class="primary-button" type="button">关闭</button>
     </div>
   </div>
 
