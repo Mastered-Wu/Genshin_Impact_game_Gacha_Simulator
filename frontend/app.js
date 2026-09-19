@@ -550,6 +550,36 @@ function poolTypeLabel(banner) {
   return isStandardBanner(banner) ? "常驻池" : "限定池";
 }
 
+function handleWishShortcut(event) {
+  if (event.repeat || state.loading || state.activeView !== "wish") {
+    return;
+  }
+
+  const target = event.target;
+  const isEditableTarget = target instanceof HTMLInputElement
+    || target instanceof HTMLTextAreaElement
+    || target instanceof HTMLSelectElement
+    || target.isContentEditable;
+  if (isEditableTarget || !$("simulator-app") || $("simulator-app").classList.contains("hidden")) {
+    return;
+  }
+
+  if (!$("results-modal").classList.contains("hidden")
+    || !$("exchange-modal").classList.contains("hidden")
+    || !$("topup-modal").classList.contains("hidden")) {
+    return;
+  }
+
+  const key = event.key.toLowerCase();
+  if (key === "d") {
+    event.preventDefault();
+    performWish(1);
+  } else if (key === "f") {
+    event.preventDefault();
+    performWish(10);
+  }
+}
+
 $("wish-one").addEventListener("click", () => performWish(1));
 $("wish-ten").addEventListener("click", () => performWish(10));
 $("open-stats").addEventListener("click", () => showView("stats"));
@@ -580,6 +610,7 @@ $("resource-input").addEventListener("keydown", (event) => {
 });
 $("path-select").addEventListener("change", (event) => updatePath(event.target.value));
 window.addEventListener("pagehide", () => postLifecycleSignal("/api/shutdown"));
+document.addEventListener("keydown", handleWishShortcut);
 
 postLifecycleSignal("/api/cancel-shutdown");
 handleUidInput();
