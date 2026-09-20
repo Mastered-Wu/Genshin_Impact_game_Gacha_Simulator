@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="rim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff0bd"/><stop offset="40%" stop-color="#e3b35c"/><stop offset="78%" stop-color="#b5761f"/><stop offset="100%" stop-color="#8d5713"/>
+    </linearGradient>
+    <radialGradient id="bg" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#e8fdf0"/><stop offset="50%" stop-color="#b8ecc8"/><stop offset="100%" stop-color="#6abf80"/>
+    </radialGradient>
+    <linearGradient id="bust" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1a5c3a"/><stop offset="50%" stop-color="#2a7a4e"/><stop offset="100%" stop-color="#3d9668"/>
+    </linearGradient>
+    <linearGradient id="hair" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a0e8c0"/><stop offset="100%" stop-color="#4ea878"/>
+    </linearGradient>
+    <clipPath id="diamond"><polygon points="256,36 476,256 256,476 36,256"/></clipPath>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#0a3a1a" flood-opacity="0.24"/></filter>
+  </defs>
+  <g filter="url(#sh)">
+    <polygon points="256,28 484,256 256,484 28,256" fill="url(#rim)" stroke="#8a5a14" stroke-width="2"/>
+    <g clip-path="url(#diamond)">
+      <polygon points="256,36 476,256 256,476 36,256" fill="url(#bg)"/>
+      <!-- wind swirls -->
+      <g fill="none" stroke="#ffffff" stroke-width="3" opacity="0.25" stroke-linecap="round">
+        <path d="M120 160 Q160 140 200 160 Q240 180 280 160"/>
+        <path d="M330 340 Q370 320 410 340"/>
+        <path d="M130 360 Q170 340 210 360"/>
+      </g>
+      <!-- shoulders -->
+      <path d="M150 380 Q150 300 200 270 L312 270 Q362 300 362 380 Z" fill="url(#bust)"/>
+      <!-- collar -->
+      <path d="M210 272 L256 296 L302 272" fill="none" stroke="#6ad8a0" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- neck -->
+      <rect x="240" y="240" width="32" height="40" rx="14" fill="url(#bust)"/>
+      <!-- hair -->
+      <path d="M182 230 Q168 165 215 130 Q256 105 297 130 Q344 165 330 230 Q320 255 305 245 L207 245 Q192 255 182 230 Z" fill="url(#hair)"/>
+      <!-- hair strands -->
+      <path d="M195 220 Q210 180 240 165" fill="none" stroke="#7dd0a0" stroke-width="3" opacity="0.6" stroke-linecap="round"/>
+      <path d="M310 225 Q325 190 318 155" fill="none" stroke="#7dd0a0" stroke-width="3" opacity="0.6" stroke-linecap="round"/>
+      <!-- face -->
+      <ellipse cx="256" cy="195" rx="46" ry="52" fill="#e8f5d0"/>
+      <!-- hair front -->
+      <path d="M210 175 Q202 140 235 125 Q256 115 277 125 Q310 140 302 175 Q295 160 280 156 Q268 152 256 155 Q244 152 232 156 Q217 160 210 175 Z" fill="url(#hair)"/>
+      <!-- eyes -->
+      <ellipse cx="236" cy="200" rx="5" ry="7" fill="#1a5c3a"/>
+      <ellipse cx="276" cy="200" rx="5" ry="7" fill="#1a5c3a"/>
+      <!-- wind emblem -->
+      <g transform="translate(256 355)" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round">
+        <path d="M-20 -10 Q0 -18 18 -8 Q26 0 12 8"/>
+        <path d="M-16 4 Q4 -2 20 8 Q28 16 8 18"/>
+      </g>
+      <path d="M160 130 l5 12 12 5 -12 5 -5 12 -5 -12 -12 -5 12 -5 z" fill="#ffffff" opacity="0.8"/>
+      <path d="M380 330 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4 z" fill="#e8fff0" opacity="0.7"/>
+    </g>
+    <polygon points="256,28 484,256 256,484 28,256" fill="none" stroke="#fbe9b2" stroke-width="3" stroke-linejoin="round" opacity="0.88"/>
+  </g>
+</svg>

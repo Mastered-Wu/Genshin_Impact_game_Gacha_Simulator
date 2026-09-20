@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="rim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0d8ff"/><stop offset="40%" stop-color="#c89af0"/><stop offset="78%" stop-color="#7a3fb0"/><stop offset="100%" stop-color="#5a2a90"/>
+    </linearGradient>
+    <radialGradient id="bg" cx="50%" cy="42%" r="58%">
+      <stop offset="0%" stop-color="#fff0d8"/><stop offset="60%" stop-color="#e8c070"/><stop offset="100%" stop-color="#a07820"/>
+    </radialGradient>
+    <linearGradient id="blade" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8e8b0"/><stop offset="50%" stop-color="#c8a050"/><stop offset="100%" stop-color="#886020"/>
+    </linearGradient>
+    <linearGradient id="hilt" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a06828"/><stop offset="100%" stop-color="#603810"/>
+    </linearGradient>
+    <clipPath id="diamond"><polygon points="256,36 476,256 256,476 36,256"/></clipPath>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#3a2806" flood-opacity="0.22"/></filter>
+  </defs>
+  <g filter="url(#sh)">
+    <polygon points="256,28 484,256 256,484 28,256" fill="url(#rim)" stroke="#5a2a90" stroke-width="2"/>
+    <g clip-path="url(#diamond)">
+      <polygon points="256,36 476,256 256,476 36,256" fill="url(#bg)"/>
+      <!-- sand particles -->
+      <g fill="#ffffff" opacity="0.12"><circle cx="130" cy="170" r="2"/><circle cx="160" cy="200" r="1.5"/><circle cx="380" cy="330" r="2"/><circle cx="360" cy="360" r="1.5"/></g>
+      <!-- short sword (diagonal) -->
+      <g transform="rotate(-30 256 256)">
+        <!-- blade -->
+        <path d="M256 100 L270 100 L270 340 L256 355 L242 340 L242 100 Z" fill="url(#blade)" stroke="#886020" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M256 110 L256 345" stroke="#fff8e0" stroke-width="2" opacity="0.4"/>
+        <!-- crossguard -->
+        <rect x="222" y="355" width="68" height="12" rx="3" fill="url(#hilt)" stroke="#603810" stroke-width="1.5"/>
+        <!-- grip -->
+        <rect x="248" y="367" width="16" height="44" rx="3" fill="#3a2010"/>
+        <line x1="248" y1="376" x2="264" y2="376" stroke="#5a3020" stroke-width="2"/>
+        <line x1="248" y1="386" x2="264" y2="386" stroke="#5a3020" stroke-width="2"/>
+        <line x1="248" y1="396" x2="264" y2="396" stroke="#5a3020" stroke-width="2"/>
+        <!-- pommel -->
+        <circle cx="256" cy="418" r="10" fill="url(#hilt)" stroke="#603810" stroke-width="1.5"/>
+      </g>
+    </g>
+    <polygon points="256,28 484,256 256,484 28,256" fill="none" stroke="#e0c8ff" stroke-width="3" stroke-linejoin="round" opacity="0.85"/>
+  </g>
+</svg>

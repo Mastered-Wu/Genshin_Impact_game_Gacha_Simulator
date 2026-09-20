@@ -468,7 +468,7 @@ h2 .pool-type {
 
 .results {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
   gap: 10px;
   min-height: 182px;
 }
@@ -481,14 +481,34 @@ h2 .pool-type {
 }
 
 .result-card {
-  min-height: 128px;
-  padding: 12px;
+  display: grid;
+  grid-template-rows: auto minmax(94px, auto);
+  min-height: 238px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.result-art {
+  width: 100%;
+  aspect-ratio: 1;
+  min-height: 120px;
+  background-color: rgba(255, 255, 255, 0.62);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.result-copy {
+  min-width: 0;
+  padding: 9px 10px 11px;
+  background: rgba(255, 255, 255, 0.82);
 }
 
 .result-card strong,
 .history-row strong {
   display: block;
   overflow-wrap: anywhere;
+  line-height: 1.35;
 }
 
 .rarity-5 {
@@ -508,7 +528,7 @@ h2 .pool-type {
 
 .stars {
   display: inline-block;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   font-weight: 700;
 }
 
@@ -581,6 +601,10 @@ h2 .pool-type {
 
   .history-row {
     grid-template-columns: 54px minmax(0, 1fr);
+  }
+
+  .results {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .history-row .history-meta {

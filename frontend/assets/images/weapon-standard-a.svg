@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="rim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff0bd"/><stop offset="40%" stop-color="#e3b35c"/><stop offset="78%" stop-color="#b5761f"/><stop offset="100%" stop-color="#8d5713"/>
+    </linearGradient>
+    <radialGradient id="bg" cx="50%" cy="42%" r="58%">
+      <stop offset="0%" stop-color="#f0f4f8"/><stop offset="60%" stop-color="#c0d0e0"/><stop offset="100%" stop-color="#7088a0"/>
+    </radialGradient>
+    <linearGradient id="blade" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/><stop offset="40%" stop-color="#d8e0e8"/><stop offset="100%" stop-color="#88a0b8"/>
+    </linearGradient>
+    <linearGradient id="hilt" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c99438"/><stop offset="50%" stop-color="#a07028"/><stop offset="100%" stop-color="#7a5018"/>
+    </linearGradient>
+    <clipPath id="diamond"><polygon points="256,36 476,256 256,476 36,256"/></clipPath>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#1a2838" flood-opacity="0.22"/></filter>
+  </defs>
+  <g filter="url(#sh)">
+    <polygon points="256,28 484,256 256,484 28,256" fill="url(#rim)" stroke="#8a5a14" stroke-width="2"/>
+    <g clip-path="url(#diamond)">
+      <polygon points="256,36 476,256 256,476 36,256" fill="url(#bg)"/>
+      <!-- blade (wide greatsword, diagonal) -->
+      <g transform="rotate(-35 256 256)">
+        <!-- blade -->
+        <path d="M256 60 L278 60 L278 380 L256 400 L234 380 L234 60 Z" fill="url(#blade)" stroke="#88a0b8" stroke-width="2" stroke-linejoin="round"/>
+        <!-- fuller (center groove) -->
+        <path d="M256 75 L256 370" stroke="#a0b8c8" stroke-width="3" opacity="0.5"/>
+        <!-- edge highlight -->
+        <path d="M236 70 L236 375" stroke="#ffffff" stroke-width="2" opacity="0.6"/>
+        <path d="M276 70 L276 375" stroke="#ffffff" stroke-width="2" opacity="0.6"/>
+        <!-- crossguard -->
+        <rect x="200" y="400" width="112" height="16" rx="4" fill="url(#hilt)" stroke="#7a5018" stroke-width="1.5"/>
+        <!-- quillon tips -->
+        <circle cx="200" cy="408" r="10" fill="url(#hilt)" stroke="#7a5018" stroke-width="1.5"/>
+        <circle cx="312" cy="408" r="10" fill="url(#hilt)" stroke="#7a5018" stroke-width="1.5"/>
+        <!-- grip -->
+        <rect x="246" y="416" width="20" height="48" rx="4" fill="#3a2818"/>
+        <line x1="246" y1="425" x2="266" y2="425" stroke="#5a3828" stroke-width="2"/>
+        <line x1="246" y1="435" x2="266" y2="435" stroke="#5a3828" stroke-width="2"/>
+        <line x1="246" y1="445" x2="266" y2="445" stroke="#5a3828" stroke-width="2"/>
+        <!-- pommel -->
+        <circle cx="256" cy="470" r="12" fill="url(#hilt)" stroke="#7a5018" stroke-width="2"/>
+        <!-- gem in pommel -->
+        <circle cx="256" cy="470" r="5" fill="#8deaff" opacity="0.5"/>
+      </g>
+      <!-- sparkles -->
+      <path d="M150 150 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 z" fill="#ffffff" opacity="0.75"/>
+      <path d="M370 350 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#e8f0f8" opacity="0.65"/>
+    </g>
+    <polygon points="256,28 484,256 256,484 28,256" fill="none" stroke="#fbe9b2" stroke-width="3" stroke-linejoin="round" opacity="0.88"/>
+  </g>
+</svg>

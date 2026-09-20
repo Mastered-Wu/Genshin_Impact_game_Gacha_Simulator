@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="rim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0d8ff"/><stop offset="40%" stop-color="#c89af0"/><stop offset="78%" stop-color="#7a3fb0"/><stop offset="100%" stop-color="#5a2a90"/>
+    </linearGradient>
+    <radialGradient id="bg" cx="50%" cy="42%" r="58%">
+      <stop offset="0%" stop-color="#e0e0e8"/><stop offset="60%" stop-color="#9090a0"/><stop offset="100%" stop-color="#484858"/>
+    </radialGradient>
+    <linearGradient id="blade" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d8d8e0"/><stop offset="50%" stop-color="#a0a0b0"/><stop offset="100%" stop-color="#606078"/>
+    </linearGradient>
+    <linearGradient id="hilt" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#484848"/><stop offset="100%" stop-color="#282828"/>
+    </linearGradient>
+    <clipPath id="diamond"><polygon points="256,36 476,256 256,476 36,256"/></clipPath>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#1a1a28" flood-opacity="0.22"/></filter>
+  </defs>
+  <g filter="url(#sh)">
+    <polygon points="256,28 484,256 256,484 28,256" fill="url(#rim)" stroke="#5a2a90" stroke-width="2"/>
+    <g clip-path="url(#diamond)">
+      <polygon points="256,36 476,256 256,476 36,256" fill="url(#bg)"/>
+      <!-- iron greatsword (vertical, heavy) -->
+      <g transform="rotate(-30 256 256)">
+        <!-- wide dark blade -->
+        <path d="M256 80 L284 80 L284 360 L256 385 L228 360 L228 80 Z" fill="url(#blade)" stroke="#606078" stroke-width="2" stroke-linejoin="round"/>
+        <!-- fuller -->
+        <path d="M256 95 L256 370" stroke="#787888" stroke-width="4" opacity="0.4"/>
+        <!-- edge dark line -->
+        <path d="M228 88 L228 365" stroke="#484858" stroke-width="2"/>
+        <path d="M284 88 L284 365" stroke="#484858" stroke-width="2"/>
+        <!-- heavy crossguard -->
+        <rect x="196" y="385" width="120" height="20" rx="3" fill="url(#hilt)" stroke="#282828" stroke-width="2"/>
+        <!-- guard spikes -->
+        <path d="M196 395 L182 390 L182 400 L196 400 Z" fill="url(#hilt)" stroke="#282828" stroke-width="1.5"/>
+        <path d="M316 395 L330 390 L330 400 L316 400 Z" fill="url(#hilt)" stroke="#282828" stroke-width="1.5"/>
+        <!-- grip (leather wrap) -->
+        <rect x="244" y="405" width="24" height="50" rx="4" fill="#2a1818"/>
+        <line x1="244" y1="415" x2="268" y2="415" stroke="#3a2828" stroke-width="2"/>
+        <line x1="244" y1="425" x2="268" y2="425" stroke="#3a2828" stroke-width="2"/>
+        <line x1="244" y1="435" x2="268" y2="435" stroke="#3a2828" stroke-width="2"/>
+        <line x1="244" y1="445" x2="268" y2="445" stroke="#3a2828" stroke-width="2"/>
+        <!-- pommel (heavy iron) -->
+        <circle cx="256" cy="462" r="14" fill="url(#hilt)" stroke="#282828" stroke-width="2"/>
+      </g>
+    </g>
+    <polygon points="256,28 484,256 256,484 28,256" fill="none" stroke="#e0c8ff" stroke-width="3" stroke-linejoin="round" opacity="0.85"/>
+  </g>
+</svg>

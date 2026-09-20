@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="rim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff0bd"/><stop offset="40%" stop-color="#e3b35c"/><stop offset="78%" stop-color="#b5761f"/><stop offset="100%" stop-color="#8d5713"/>
+    </linearGradient>
+    <radialGradient id="bg" cx="50%" cy="45%" r="58%">
+      <stop offset="0%" stop-color="#e0f0ff"/><stop offset="60%" stop-color="#a0c8e8"/><stop offset="100%" stop-color="#4a78a8"/>
+    </radialGradient>
+    <linearGradient id="bow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2a5a8a"/><stop offset="50%" stop-color="#5a9ad0"/><stop offset="100%" stop-color="#2a5a8a"/>
+    </linearGradient>
+    <linearGradient id="grip" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8d5713"/><stop offset="50%" stop-color="#c99438"/><stop offset="100%" stop-color="#8d5713"/>
+    </linearGradient>
+    <clipPath id="diamond"><polygon points="256,36 476,256 256,476 36,256"/></clipPath>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#0a2a4a" flood-opacity="0.22"/></filter>
+  </defs>
+  <g filter="url(#sh)">
+    <polygon points="256,28 484,256 256,484 28,256" fill="url(#rim)" stroke="#8a5a14" stroke-width="2"/>
+    <g clip-path="url(#diamond)">
+      <polygon points="256,36 476,256 256,476 36,256" fill="url(#bg)"/>
+      <!-- bow body (recurve, vertical) -->
+      <path d="M256 80 Q180 200 200 256 Q180 312 256 432" fill="none" stroke="url(#bow)" stroke-width="14" stroke-linecap="round"/>
+      <!-- recurve tips -->
+      <path d="M256 80 Q270 72 276 84" fill="none" stroke="url(#bow)" stroke-width="10" stroke-linecap="round"/>
+      <path d="M256 432 Q270 440 276 428" fill="none" stroke="url(#bow)" stroke-width="10" stroke-linecap="round"/>
+      <!-- gold accents on limbs -->
+      <path d="M250 120 Q210 200 210 256" fill="none" stroke="#e3b35c" stroke-width="2.5" opacity="0.6"/>
+      <path d="M250 392 Q210 312 210 256" fill="none" stroke="#e3b35c" stroke-width="2.5" opacity="0.6"/>
+      <!-- grip -->
+      <rect x="202" y="230" width="16" height="52" rx="4" fill="url(#grip)"/>
+      <line x1="204" y1="238" x2="216" y2="238" stroke="#8d5713" stroke-width="1.5"/>
+      <line x1="204" y1="248" x2="216" y2="248" stroke="#8d5713" stroke-width="1.5"/>
+      <line x1="204" y1="258" x2="216" y2="258" stroke="#8d5713" stroke-width="1.5"/>
+      <line x1="204" y1="268" x2="216" y2="268" stroke="#8d5713" stroke-width="1.5"/>
+      <!-- string -->
+      <line x1="276" y1="84" x2="210" y2="256" stroke="#e8f0ff" stroke-width="2.5" opacity="0.8"/>
+      <line x1="210" y1="256" x2="276" y2="428" stroke="#e8f0ff" stroke-width="2.5" opacity="0.8"/>
+      <!-- nocked arrow -->
+      <line x1="210" y1="256" x2="310" y2="256" stroke="#c99438" stroke-width="3" stroke-linecap="round"/>
+      <path d="M310 250 L322 256 L310 262" fill="none" stroke="#e3b35c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- azure glow orb at grip -->
+      <circle cx="210" cy="256" r="18" fill="#5a9ad0" opacity="0.3"/>
+      <circle cx="210" cy="256" r="8" fill="#8deaff" opacity="0.6"/>
+      <!-- sparkles -->
+      <path d="M150 150 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 z" fill="#ffffff" opacity="0.75"/>
+      <path d="M370 350 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#e8f0ff" opacity="0.65"/>
+    </g>
+    <polygon points="256,28 484,256 256,484 28,256" fill="none" stroke="#fbe9b2" stroke-width="3" stroke-linejoin="round" opacity="0.88"/>
+  </g>
+</svg>

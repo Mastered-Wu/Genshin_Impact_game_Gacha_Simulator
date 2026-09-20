@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="rim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff0bd"/><stop offset="40%" stop-color="#e3b35c"/><stop offset="78%" stop-color="#b5761f"/><stop offset="100%" stop-color="#8d5713"/>
+    </linearGradient>
+    <radialGradient id="bg" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#e8f6ff"/><stop offset="50%" stop-color="#b0dcf0"/><stop offset="100%" stop-color="#5a9cc8"/>
+    </radialGradient>
+    <linearGradient id="bust" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1a3a5c"/><stop offset="50%" stop-color="#2a5a8a"/><stop offset="100%" stop-color="#3a78b0"/>
+    </linearGradient>
+    <linearGradient id="hair" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d0e8f8"/><stop offset="100%" stop-color="#7ab0d8"/>
+    </linearGradient>
+    <clipPath id="diamond"><polygon points="256,36 476,256 256,476 36,256"/></clipPath>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#0a1a3a" flood-opacity="0.24"/></filter>
+  </defs>
+  <g filter="url(#sh)">
+    <polygon points="256,28 484,256 256,484 28,256" fill="url(#rim)" stroke="#8a5a14" stroke-width="2"/>
+    <g clip-path="url(#diamond)">
+      <polygon points="256,36 476,256 256,476 36,256" fill="url(#bg)"/>
+      <!-- ice crystals -->
+      <g fill="#ffffff" opacity="0.3">
+        <path d="M120 150 l8 0 4 7 -4 7 -8 0 -4 -7 z" transform="rotate(0 128 157)"/>
+        <path d="M370 320 l6 0 3 5 -3 5 -6 0 -3 -5 z"/>
+        <path d="M160 350 l7 0 3.5 6 -3.5 6 -7 0 -3.5 -6 z"/>
+      </g>
+      <!-- shoulders -->
+      <path d="M150 380 Q150 300 200 270 L312 270 Q362 300 362 380 Z" fill="url(#bust)"/>
+      <!-- collar -->
+      <path d="M210 272 L256 296 L302 272" fill="none" stroke="#8ac8f0" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- neck -->
+      <rect x="240" y="240" width="32" height="40" rx="14" fill="url(#bust)"/>
+      <!-- hair -->
+      <path d="M180 225 Q172 160 215 128 Q256 102 297 128 Q340 160 332 225 Q325 255 308 247 L204 247 Q187 255 180 225 Z" fill="url(#hair)"/>
+      <!-- face -->
+      <ellipse cx="256" cy="195" rx="46" ry="52" fill="#e0ecf5"/>
+      <!-- hair front -->
+      <path d="M208 172 Q200 138 235 122 Q256 112 277 122 Q312 138 304 172 Q298 158 284 153 Q270 149 256 152 Q242 149 228 153 Q214 158 208 172 Z" fill="url(#hair)"/>
+      <!-- glasses (scholar) -->
+      <g fill="none" stroke="#3a78b0" stroke-width="2.5">
+        <circle cx="236" cy="198" r="12"/>
+        <circle cx="276" cy="198" r="12"/>
+        <line x1="248" y1="198" x2="264" y2="198"/>
+      </g>
+      <ellipse cx="236" cy="198" rx="4" ry="6" fill="#1a3a5c"/>
+      <ellipse cx="276" cy="198" rx="4" ry="6" fill="#1a3a5c"/>
+      <!-- snowflake emblem -->
+      <g transform="translate(256 355)" stroke="#ffffff" stroke-width="3" stroke-linecap="round" fill="none">
+        <line x1="0" y1="-22" x2="0" y2="22"/>
+        <line x1="-19" y1="-11" x2="19" y2="11"/>
+        <line x1="-19" y1="11" x2="19" y2="-11"/>
+        <path d="M-5 -17 L0 -22 L5 -17"/>
+        <path d="M-5 17 L0 22 L5 17"/>
+      </g>
+      <path d="M150 140 l5 12 12 5 -12 5 -5 12 -5 -12 -12 -5 12 -5 z" fill="#ffffff" opacity="0.85"/>
+      <path d="M380 340 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4 z" fill="#e8f6ff" opacity="0.7"/>
+    </g>
+    <polygon points="256,28 484,256 256,484 28,256" fill="none" stroke="#fbe9b2" stroke-width="3" stroke-linejoin="round" opacity="0.88"/>
+  </g>
+</svg>

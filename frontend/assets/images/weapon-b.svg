@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="rim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff0bd"/><stop offset="40%" stop-color="#e3b35c"/><stop offset="78%" stop-color="#b5761f"/><stop offset="100%" stop-color="#8d5713"/>
+    </linearGradient>
+    <radialGradient id="bg" cx="50%" cy="42%" r="58%">
+      <stop offset="0%" stop-color="#ffe8e0"/><stop offset="60%" stop-color="#f0a070"/><stop offset="100%" stop-color="#c04020"/>
+    </radialGradient>
+    <linearGradient id="staff" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a05828"/><stop offset="50%" stop-color="#8d4818"/><stop offset="100%" stop-color="#6a3408"/>
+    </linearGradient>
+    <linearGradient id="orbG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff0a0"/><stop offset="50%" stop-color="#f08030"/><stop offset="100%" stop-color="#c04010"/>
+    </linearGradient>
+    <clipPath id="diamond"><polygon points="256,36 476,256 256,476 36,256"/></clipPath>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#3a0a02" flood-opacity="0.22"/></filter>
+    <filter id="glow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <g filter="url(#sh)">
+    <polygon points="256,28 484,256 256,484 28,256" fill="url(#rim)" stroke="#8a5a14" stroke-width="2"/>
+    <g clip-path="url(#diamond)">
+      <polygon points="256,36 476,256 256,476 36,256" fill="url(#bg)"/>
+      <!-- heat shimmer -->
+      <g fill="#ffffff" opacity="0.1">
+        <ellipse cx="150" cy="180" rx="12" ry="4" transform="rotate(-15 150 180)"/>
+        <ellipse cx="370" cy="340" rx="10" ry="3" transform="rotate(25 370 340)"/>
+      </g>
+      <!-- staff shaft -->
+      <rect x="248" y="160" width="16" height="280" rx="6" fill="url(#staff)"/>
+      <!-- gold bands -->
+      <rect x="244" y="220" width="24" height="6" rx="2" fill="#c99438"/>
+      <rect x="244" y="320" width="24" height="6" rx="2" fill="#c99438"/>
+      <rect x="244" y="400" width="24" height="6" rx="2" fill="#c99438"/>
+      <!-- claw prongs -->
+      <path d="M256 160 L228 130 Q220 120 226 110 L240 100" fill="none" stroke="#c99438" stroke-width="6" stroke-linecap="round"/>
+      <path d="M256 160 L284 130 Q292 120 286 110 L272 100" fill="none" stroke="#c99438" stroke-width="6" stroke-linecap="round"/>
+      <path d="M256 160 L256 95" fill="none" stroke="#c99438" stroke-width="6" stroke-linecap="round"/>
+      <!-- orb glow halo -->
+      <circle cx="256" cy="110" r="40" fill="#f08030" opacity="0.2"/>
+      <circle cx="256" cy="110" r="30" fill="#f0a030" opacity="0.3"/>
+      <!-- orb -->
+      <circle cx="256" cy="110" r="26" fill="url(#orbG)" stroke="#e3b35c" stroke-width="2"/>
+      <!-- orb highlight -->
+      <ellipse cx="248" cy="100" rx="10" ry="8" fill="#fff8e0" opacity="0.6"/>
+      <!-- inner fire swirl -->
+      <path d="M256 96 Q244 104 248 116 Q256 124 264 116 Q268 108 256 96" fill="#fff0a0" opacity="0.4"/>
+      <!-- pommel -->
+      <circle cx="256" cy="446" r="12" fill="#c99438" stroke="#8d5713" stroke-width="2"/>
+      <!-- sparkles -->
+      <path d="M150 140 l4 10 10 4 -10 4 -4 10 -4 -10 -10 -4 10 -4 z" fill="#ffffff" opacity="0.75"/>
+      <path d="M370 320 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#ffe8e0" opacity="0.65"/>
+    </g>
+    <polygon points="256,28 484,256 256,484 28,256" fill="none" stroke="#fbe9b2" stroke-width="3" stroke-linejoin="round" opacity="0.88"/>
+  </g>
+</svg>

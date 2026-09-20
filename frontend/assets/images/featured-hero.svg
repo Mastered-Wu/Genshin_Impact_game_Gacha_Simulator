@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="rim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff0bd"/><stop offset="40%" stop-color="#e3b35c"/><stop offset="78%" stop-color="#b5761f"/><stop offset="100%" stop-color="#8d5713"/>
+    </linearGradient>
+    <radialGradient id="bg" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#fff5d6"/><stop offset="50%" stop-color="#fde0a0"/><stop offset="100%" stop-color="#e8a838"/>
+    </radialGradient>
+    <linearGradient id="bust" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#5c3d10"/><stop offset="50%" stop-color="#7a5215"/><stop offset="100%" stop-color="#9c6a1e"/>
+    </linearGradient>
+    <linearGradient id="hair" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f4d878"/><stop offset="100%" stop-color="#d99a30"/>
+    </linearGradient>
+    <clipPath id="diamond"><polygon points="256,36 476,256 256,476 36,256"/></clipPath>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#3a2606" flood-opacity="0.24"/></filter>
+  </defs>
+  <g filter="url(#sh)">
+    <polygon points="256,28 484,256 256,484 28,256" fill="url(#rim)" stroke="#8a5a14" stroke-width="2"/>
+    <g clip-path="url(#diamond)">
+      <polygon points="256,36 476,256 256,476 36,256" fill="url(#bg)"/>
+      <!-- star burst behind head -->
+      <g transform="translate(256 200)" opacity="0.22">
+        <path d="M0 -110 L18 -18 110 0 18 18 0 110 -18 18 -110 0 -18 -18 z" fill="#fff8e0"/>
+      </g>
+      <!-- shoulders -->
+      <path d="M150 380 Q150 300 200 270 L312 270 Q362 300 362 380 Z" fill="url(#bust)"/>
+      <!-- collar -->
+      <path d="M210 272 L256 296 L302 272" fill="none" stroke="#c99438" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- neck -->
+      <rect x="240" y="240" width="32" height="40" rx="14" fill="url(#bust)"/>
+      <!-- hair back -->
+      <path d="M180 220 Q170 160 210 130 Q256 100 302 130 Q342 160 332 220 Q332 250 310 240 L210 240 Q188 250 188 220 Z" fill="url(#hair)"/>
+      <!-- face -->
+      <ellipse cx="256" cy="195" rx="48" ry="54" fill="#f4d8a0"/>
+      <!-- hair front -->
+      <path d="M208 175 Q200 140 230 128 Q256 118 282 128 Q312 140 304 175 Q300 165 286 160 Q270 155 256 158 Q242 155 226 160 Q212 165 208 175 Z" fill="url(#hair)"/>
+      <!-- eyes -->
+      <ellipse cx="236" cy="200" rx="5" ry="7" fill="#5c3d10"/>
+      <ellipse cx="276" cy="200" rx="5" ry="7" fill="#5c3d10"/>
+      <!-- star emblem -->
+      <g transform="translate(256 355)">
+        <path d="M0 -22 L6 -7 22 -7 9 3 14 18 0 9 -14 18 -9 3 -22 -7 -6 -7 z" fill="#fff8e0" stroke="#c99438" stroke-width="1.5" stroke-linejoin="round"/>
+      </g>
+      <!-- sparkles -->
+      <path d="M150 120 l5 12 12 5 -12 5 -5 12 -5 -12 -12 -5 12 -5 z" fill="#ffffff" opacity="0.85"/>
+      <path d="M370 340 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4 z" fill="#fff8e0" opacity="0.75"/>
+    </g>
+    <polygon points="256,28 484,256 256,484 28,256" fill="none" stroke="#fbe9b2" stroke-width="3" stroke-linejoin="round" opacity="0.88"/>
+  </g>
+</svg>

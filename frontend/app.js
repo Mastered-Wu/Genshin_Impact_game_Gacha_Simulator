@@ -10,6 +10,26 @@ const state = {
   activeView: "wish",
 };
 
+const rewardImageById = {
+  "featured-hero": "/assets/images/featured-hero.png",
+  "standard-hero-a": "/assets/images/standard-hero-a.png",
+  "standard-hero-b": "/assets/images/standard-hero-b.png",
+  "standard-hero-c": "/assets/images/standard-hero-c.png",
+  "featured-four-a": "/assets/images/featured-four-a.png",
+  "featured-four-b": "/assets/images/featured-four-b.png",
+  "standard-four-hero": "/assets/images/standard-four-hero.png",
+  "standard-four-weapon": "/assets/images/standard-four-weapon.png",
+  "weapon-a": "/assets/images/weapon-a.png",
+  "weapon-b": "/assets/images/weapon-b.png",
+  "weapon-standard-a": "/assets/images/weapon-standard-a.png",
+  "weapon-standard-b": "/assets/images/weapon-standard-b.png",
+  "weapon-four-a": "/assets/images/weapon-four-a.png",
+  "weapon-four-b": "/assets/images/weapon-four-b.png",
+  "three-sword": "/assets/images/three-sword.png",
+  "three-bow": "/assets/images/three-bow.png",
+  "three-catalyst": "/assets/images/three-catalyst.png",
+};
+
 const $ = (id) => document.getElementById(id);
 
 function postLifecycleSignal(url) {
@@ -419,11 +439,24 @@ function resultCard(result) {
   if (result.hitHardPity4) notes.push("4 星保底");
   if (result.usedGuarantee) notes.push("保底生效");
   if (result.item.featured || result.item.promotional) notes.push("限定");
-  card.innerHTML = `
+  const art = document.createElement("div");
+  art.className = "result-art";
+  art.setAttribute("role", "img");
+  art.setAttribute("aria-label", `${result.item.name}图片`);
+  const imagePath = rewardImageById[result.item.id];
+  if (imagePath) {
+    art.style.backgroundImage = `url("${imagePath}")`;
+  }
+
+  const copy = document.createElement("div");
+  copy.className = "result-copy";
+  copy.innerHTML = `
     <span class="stars">${"★".repeat(result.item.rarity)}</span>
     <strong>${escapeHtml(result.item.name)}</strong>
     <div class="tagline">${notes.length ? notes.join(" / ") : "常规获得"}</div>
   `;
+
+  card.append(art, copy);
   return card;
 }
 

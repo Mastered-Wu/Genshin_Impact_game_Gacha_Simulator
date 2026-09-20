@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="rim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0d8ff"/><stop offset="40%" stop-color="#c89af0"/><stop offset="78%" stop-color="#7a3fb0"/><stop offset="100%" stop-color="#5a2a90"/>
+    </linearGradient>
+    <radialGradient id="bg" cx="50%" cy="42%" r="58%">
+      <stop offset="0%" stop-color="#d0d8ff"/><stop offset="60%" stop-color="#6068a0"/><stop offset="100%" stop-color="#282a58"/>
+    </radialGradient>
+    <linearGradient id="stock" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4a4868"/><stop offset="50%" stop-color="#3a3858"/><stop offset="100%" stop-color="#2a2848"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#5a5878"/><stop offset="50%" stop-color="#8a88b0"/><stop offset="100%" stop-color="#5a5878"/>
+    </linearGradient>
+    <clipPath id="diamond"><polygon points="256,36 476,256 256,476 36,256"/></clipPath>
+    <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#08081a" flood-opacity="0.22"/></filter>
+  </defs>
+  <g filter="url(#sh)">
+    <polygon points="256,28 484,256 256,484 28,256" fill="url(#rim)" stroke="#5a2a90" stroke-width="2"/>
+    <g clip-path="url(#diamond)">
+      <polygon points="256,36 476,256 256,476 36,256" fill="url(#bg)"/>
+      <!-- night stars -->
+      <g fill="#e8d8ff" opacity="0.3"><circle cx="130" cy="140" r="2"/><circle cx="160" cy="120" r="1.5"/><circle cx="390" cy="160" r="2"/><circle cx="420" cy="130" r="1.5"/></g>
+      <!-- crossbow (horizontal, tilted) -->
+      <g transform="rotate(-15 256 256)">
+        <!-- prod (bow part) -->
+        <path d="M140 230 Q200 210 256 220 Q312 210 372 230 Q372 240 372 240 Q312 250 256 242 Q200 250 140 240 Z" fill="url(#metal)" stroke="#3a3858" stroke-width="2"/>
+        <!-- string -->
+        <path d="M150 232 Q256 280 362 232" fill="none" stroke="#e8d8ff" stroke-width="2.5" opacity="0.7"/>
+        <!-- bolt channel -->
+        <rect x="238" y="224" width="36" height="10" rx="2" fill="#2a2848"/>
+        <!-- stock -->
+        <path d="M256 228 L340 228 L348 250 L348 280 L330 280 L330 250 L256 250 Z" fill="url(#stock)" stroke="#2a2848" stroke-width="2"/>
+        <!-- trigger -->
+        <path d="M320 262 L320 285 L326 285 L326 262" fill="#5a5878" stroke="#2a2848" stroke-width="1.5"/>
+        <!-- bolt loaded -->
+        <line x1="248" y1="229" x2="340" y2="229" stroke="#c8a050" stroke-width="3" stroke-linecap="round"/>
+        <path d="M340 224 L352 229 L340 234" fill="#e8c070" stroke="#886020" stroke-width="1.5" stroke-linejoin="round"/>
+        <!-- sight -->
+        <circle cx="345" cy="229" r="5" fill="none" stroke="#8a88b0" stroke-width="2"/>
+      </g>
+    </g>
+    <polygon points="256,28 484,256 256,484 28,256" fill="none" stroke="#e0c8ff" stroke-width="3" stroke-linejoin="round" opacity="0.85"/>
+  </g>
+</svg>
