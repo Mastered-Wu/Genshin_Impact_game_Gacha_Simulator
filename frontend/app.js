@@ -442,7 +442,7 @@ function renderResults(results) {
     container.textContent = "暂无结果";
     return;
   }
-  container.className = "results";
+  container.className = `results ${results.length === 1 ? "single-pull" : "ten-pull"}`;
   container.innerHTML = "";
   results.forEach((result) => {
     container.appendChild(resultCard(result));

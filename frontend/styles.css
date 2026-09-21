@@ -379,13 +379,13 @@ h2 .pool-type {
 }
 
 .results-modal-card {
-  width: min(760px, 100%);
+  width: min(1240px, calc(100vw - 32px));
 }
 
 .results-modal-card .results {
   min-height: 180px;
   max-height: min(58vh, 520px);
-  overflow: auto;
+  overflow: auto hidden;
 }
 
 .results-modal-card .primary-button {
@@ -500,6 +500,17 @@ h2 .pool-type {
   min-height: 182px;
 }
 
+.results.single-pull {
+  grid-template-columns: minmax(180px, 220px);
+  justify-content: center;
+  align-items: center;
+}
+
+.results.ten-pull {
+  grid-template-columns: repeat(10, minmax(88px, 1fr));
+  align-items: stretch;
+}
+
 .result-card,
 .history-row {
   border: 1px solid var(--line);
@@ -515,6 +526,11 @@ h2 .pool-type {
   overflow: hidden;
 }
 
+.ten-pull .result-card {
+  grid-template-rows: auto minmax(84px, auto);
+  min-height: 176px;
+}
+
 .result-art {
   width: 100%;
   aspect-ratio: 1;
@@ -525,10 +541,19 @@ h2 .pool-type {
   background-size: cover;
 }
 
+.ten-pull .result-art {
+  min-height: 82px;
+}
+
 .result-copy {
   min-width: 0;
   padding: 9px 10px 11px;
   background: rgba(255, 255, 255, 0.82);
+}
+
+.ten-pull .result-copy {
+  padding: 8px 7px 9px;
+  font-size: 13px;
 }
 
 .result-card strong,
@@ -641,6 +666,14 @@ h2 .pool-type {
 
   .results {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .results.single-pull {
+    grid-template-columns: minmax(180px, 220px);
+  }
+
+  .results.ten-pull {
+    grid-template-columns: repeat(10, minmax(88px, 1fr));
   }
 
   .history-row .history-meta {
