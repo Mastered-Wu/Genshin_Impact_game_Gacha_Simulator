@@ -339,7 +339,7 @@ function renderActiveView() {
   });
 }
 
-// 顶部资源区与抽卡可用次数：同步星石、缘券和按钮可用状态。
+// 顶部资源区与抽卡可用状态：星石可编辑，缘券只读。
 function renderResources() {
   const banner = currentBanner();
   const currency = state.resources.currency || 0;
@@ -349,12 +349,13 @@ function renderResources() {
   const activeFates = isStandardBanner(banner) ? standardFates : eventFates;
   const affordableWishes = activeFates + Math.floor(currency / wishCost);
   const exchangeableFates = state.resources.exchangeableFates ?? Math.floor(currency / wishCost);
-  $("resource-balance").textContent = currency;
   $("event-fate-balance").textContent = eventFates;
   $("standard-fate-balance").textContent = standardFates;
-  $("affordable-wishes").textContent = affordableWishes;
-  $("resource-input").value = currency;
-  $("exchange-button").textContent = `兑换${fateNameForBanner(banner)}`;
+  if (document.activeElement !== $("resource-input")) {
+    $("resource-input").value = currency;
+  }
+  $("exchange-button").textContent = "兑换";
+  $("exchange-button").title = `兑换${fateNameForBanner(banner)}`;
   $("exchange-button").disabled = state.loading || exchangeableFates < 1;
   $("wish-one").disabled = state.loading || affordableWishes < 1;
   $("wish-ten").disabled = state.loading || affordableWishes < 10;
@@ -380,7 +381,7 @@ function renderBannerOptions() {
   });
 }
 
-// 当前卡池信息区：渲染卡池名、限定列表、保底和保底状态。
+// 当前卡池信息区：渲染卡池名、限定列表和保底状态。
 function renderCurrentBanner() {
   const banner = currentBanner();
   if (!banner) {
@@ -395,9 +396,6 @@ function renderCurrentBanner() {
   $("featured-line").textContent = fiveStars.length > 0
     ? `限定：${fiveStars.map((item) => item.name).join("、")}`
     : "无第一版限定保底";
-  $("pity5").textContent = `${bannerState.pity5 || 0} / ${banner.fiveStarHardPity}`;
-  $("pity4").textContent = `${bannerState.pity4 || 0} / ${banner.fourStarHardPity}`;
-  $("fate-points").textContent = `${bannerState.fatePoints || 0} / 2`;
 
   const guaranteeText = banner.id === "character-event" && bannerState.featuredGuarantee
     ? "下个 5 星限定"
@@ -413,10 +411,8 @@ function renderCurrentBanner() {
 function renderPathSelector(banner, bannerState) {
   const panel = $("path-panel");
   const select = $("path-select");
-  const fateTile = $("fate-tile");
   const isWeapon = banner.id === "weapon-event";
   panel.classList.toggle("hidden", !isWeapon);
-  fateTile.classList.toggle("hidden", !isWeapon);
   if (!isWeapon) {
     return;
   }
@@ -508,7 +504,7 @@ function renderHistory() {
   });
 }
 
-// 统计页：展示当前卡池的总抽数、4/5 星和当前保底计数。
+// 统计页：展示当前卡池的总抽数、4/5 星和限定 5 星数量。
 function renderStats() {
   const bannerState = currentBannerState();
   const stats = bannerState.stats || {};
@@ -517,8 +513,6 @@ function renderStats() {
     ["5 星", stats.fiveStars || 0],
     ["4 星", stats.fourStars || 0],
     ["限定 5 星", stats.featuredFiveStars || 0],
-    ["5 星计数", bannerState.pity5 || 0],
-    ["4 星计数", bannerState.pity4 || 0],
   ];
   $("stats").innerHTML = entries.map(([label, value]) => `
     <div class="stat"><span>${label}</span><strong>${value}</strong></div>

@@ -129,7 +129,6 @@ h2 .pool-type {
 #featured-line,
 .message,
 .section-head span,
-.pity-grid span,
 .stat span,
 .history-meta {
   color: var(--muted);
@@ -202,10 +201,18 @@ h2 .pool-type {
 }
 
 .exchange-button {
+  min-width: 80px;
   color: var(--accent-strong);
   background: #eef8fb;
   border-color: #b9d7df;
   font-weight: 700;
+}
+
+.compact-button {
+  min-width: 58px;
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 13px;
 }
 
 .primary-button:hover,
@@ -287,8 +294,7 @@ h2 .pool-type {
   margin-top: 18px;
 }
 
-.path-panel select,
-.resource-editor input {
+.path-panel select {
   width: 100%;
   min-height: 42px;
   border: 1px solid var(--line);
@@ -297,19 +303,7 @@ h2 .pool-type {
   background: #fff;
 }
 
-/* 资源操作：输入星石、顶部余额、当前池可抽次数和兑换按钮。 */
-.resource-panel {
-  display: grid;
-  gap: 8px;
-  margin-top: 18px;
-}
-
-.resource-editor {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 86px;
-  gap: 10px;
-}
-
+/* 顶部资源条：星石可编辑，缘券只读，并提供兑换和重置操作。 */
 .resource-summary {
   display: flex;
   align-items: center;
@@ -344,16 +338,20 @@ h2 .pool-type {
   color: var(--ink);
 }
 
-.resource-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 14px;
+.resource-input-label {
   color: var(--muted);
-  font-size: 14px;
+  font-weight: 700;
 }
 
-.resource-meta strong {
+.topbar-resource-input {
+  width: 92px;
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 8px;
+  background: #fff;
   color: var(--ink);
+  font-weight: 700;
 }
 
 /* 弹窗：兑换、补足确认和抽卡结果共用。 */
@@ -427,8 +425,7 @@ h2 .pool-type {
   margin-top: 18px;
 }
 
-/* 保底与统计：保底卡片和统计页共用的网格样式。 */
-.pity-grid,
+/* 统计页：展示抽数、稀有度和限定结果统计。 */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -436,7 +433,6 @@ h2 .pool-type {
   margin-top: 18px;
 }
 
-.pity-grid div,
 .stat {
   min-height: 76px;
   padding: 12px;
@@ -445,7 +441,6 @@ h2 .pool-type {
   background: #f9fbfc;
 }
 
-.pity-grid strong,
 .stat strong {
   display: block;
   margin-top: 8px;
@@ -616,9 +611,7 @@ h2 .pool-type {
   .topbar,
   .wish-layout,
   .tabs,
-  .pity-grid,
   .stats-grid,
-  .resource-editor,
   .actions,
   .page-jump {
     grid-template-columns: 1fr;

@@ -31,7 +31,8 @@
         <div class="resource-summary topbar-resources" aria-label="资源余额">
           <span class="resource-item">
             <img class="resource-icon" src="/assets/icons/starstone.svg" alt="" width="32" height="32">
-            <span>星石：<strong id="resource-balance">0</strong></span>
+            <label class="resource-input-label" for="resource-input">星石</label>
+            <input id="resource-input" class="topbar-resource-input" type="number" min="0" step="1" inputmode="numeric" value="0">
           </span>
           <span class="resource-item">
             <img class="resource-icon" src="/assets/icons/fate-event.svg" alt="" width="32" height="32">
@@ -42,6 +43,8 @@
             <span>恒辉之缘：<strong id="standard-fate-balance">0</strong></span>
           </span>
         </div>
+        <button id="resource-button" class="ghost-button compact-button" type="button">应用</button>
+        <button id="exchange-button" class="exchange-button compact-button" type="button">兑换</button>
         <button id="reset-button" class="ghost-button" type="button">重置</button>
       </div>
     </header>
@@ -49,7 +52,7 @@
     <!-- 卡池切换标签：由 app.js 根据后端 banners 动态渲染。 -->
     <nav id="banner-tabs" class="tabs" aria-label="卡池选择"></nav>
 
-    <!-- 抽卡主界面：包含卡池信息、资源操作、保底信息和抽卡按钮。 -->
+    <!-- 抽卡主界面：保留卡池展示、定轨和抽卡按钮，给后续背景图留出空间。 -->
     <section id="wish-view" class="view-section">
     <section class="wish-layout">
       <section class="wish-panel" aria-labelledby="current-banner-name">
@@ -66,36 +69,6 @@
         <div id="path-panel" class="path-panel hidden">
           <label for="path-select">武器定轨</label>
           <select id="path-select"></select>
-        </div>
-
-        <!-- 资源操作区：输入星石、查看当前池可抽次数并兑换对应缘券。 -->
-        <div class="resource-panel">
-          <label for="resource-input">星石数量</label>
-          <div class="resource-editor">
-            <input id="resource-input" type="number" min="0" step="1" inputmode="numeric" placeholder="输入当前资源">
-            <button id="resource-button" class="ghost-button" type="button">应用</button>
-          </div>
-          <div class="resource-meta">
-            <span>当前池总可抽：<strong id="affordable-wishes">0</strong></span>
-            <span>160 星石 / 抽</span>
-          </div>
-          <button id="exchange-button" class="exchange-button" type="button">兑换缘券</button>
-        </div>
-
-        <!-- 保底信息区：展示 5 星、4 星和武器命定值计数。 -->
-        <div class="pity-grid">
-          <div>
-            <span>5 星保底</span>
-            <strong id="pity5">0 / 90</strong>
-          </div>
-          <div>
-            <span>4 星保底</span>
-            <strong id="pity4">0 / 10</strong>
-          </div>
-          <div id="fate-tile">
-            <span>命定值</span>
-            <strong id="fate-points">0 / 2</strong>
-          </div>
         </div>
 
         <!-- 抽卡操作区：单抽和十连入口。 -->
