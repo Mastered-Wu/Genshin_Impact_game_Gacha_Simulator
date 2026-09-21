@@ -230,7 +230,7 @@ h2 .pool-type {
   transform: none;
 }
 
-/* 抽卡主面板：卡池信息、资源操作、保底和抽卡按钮。 */
+/* 抽卡主面板：标题下方预留大面积卡池海报展示区。 */
 .wish-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -241,6 +241,12 @@ h2 .pool-type {
 .wish-panel,
 .page-panel {
   padding: 18px;
+}
+
+.wish-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: clamp(560px, calc(100vh - 220px), 740px);
 }
 
 .banner-heading,
@@ -451,7 +457,8 @@ h2 .pool-type {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  margin-top: 18px;
+  margin-top: auto;
+  padding-top: 18px;
 }
 
 .message {
@@ -658,6 +665,10 @@ h2 .pool-type {
 
   .wish-layout {
     display: grid;
+  }
+
+  .wish-panel {
+    min-height: clamp(500px, calc(100vh - 180px), 640px);
   }
 
   .history-row {
