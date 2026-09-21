@@ -40,6 +40,7 @@ input {
   padding: 24px 0 36px;
 }
 
+/* 登录页：进入模拟器前的 UID 校验面板。 */
 .login-screen {
   min-height: 100vh;
   display: grid;
@@ -78,6 +79,7 @@ input {
   letter-spacing: 0;
 }
 
+/* 主界面顶部：标题、UID、资源余额和重置按钮。 */
 .topbar,
 .wish-panel,
 .page-panel {
@@ -140,6 +142,7 @@ h2 .pool-type {
   font-weight: 700;
 }
 
+/* 卡池标签：角色、武器、常驻三个入口。 */
 .tabs {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -220,6 +223,7 @@ h2 .pool-type {
   transform: none;
 }
 
+/* 抽卡主面板：卡池信息、资源操作、保底和抽卡按钮。 */
 .wish-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -276,6 +280,7 @@ h2 .pool-type {
   background: #eef8fb;
 }
 
+/* 武器定轨：只在武器活动祈愿中显示。 */
 .path-panel {
   display: grid;
   gap: 8px;
@@ -292,6 +297,7 @@ h2 .pool-type {
   background: #fff;
 }
 
+/* 资源操作：输入星石、顶部余额、当前池可抽次数和兑换按钮。 */
 .resource-panel {
   display: grid;
   gap: 8px;
@@ -350,6 +356,7 @@ h2 .pool-type {
   color: var(--ink);
 }
 
+/* 弹窗：兑换、补足确认和抽卡结果共用。 */
 .modal {
   position: fixed;
   inset: 0;
@@ -420,6 +427,7 @@ h2 .pool-type {
   margin-top: 18px;
 }
 
+/* 保底与统计：保底卡片和统计页共用的网格样式。 */
 .pity-grid,
 .stats-grid {
   display: grid;
@@ -455,6 +463,8 @@ h2 .pool-type {
   min-height: 22px;
   margin-top: 12px;
 }
+
+/* 页面跳转：抽卡页下方的统计和历史入口。 */
 .view-section,
 .page-panel {
   margin-top: 0;
@@ -482,6 +492,7 @@ h2 .pool-type {
   min-width: 96px;
 }
 
+/* 抽卡结果：最近结果弹窗中的卡片和图片。 */
 .results,
 .history-list {
   margin-top: 14px;
@@ -571,6 +582,7 @@ h2 .pool-type {
   font-size: 13px;
 }
 
+/* 历史页：当前卡池最近记录列表。 */
 .history-list {
   display: grid;
   gap: 8px;

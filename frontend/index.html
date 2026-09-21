@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+  <!-- 登录入口：只做 9 位 UID 校验，通过后进入本地模拟器。 -->
   <section id="login-screen" class="login-screen" aria-labelledby="login-title">
     <div class="login-panel">
       <h1 id="login-title">抽卡模拟器</h1>
@@ -18,7 +19,9 @@
     </div>
   </section>
 
+  <!-- 主应用外壳：登录后显示，内部按抽卡页、统计页、历史页切换。 -->
   <main id="simulator-app" class="app-shell hidden" aria-hidden="true">
+    <!-- 顶部栏：展示当前卡池说明、UID、资源余额和全局重置按钮。 -->
     <header class="topbar">
       <div>
         <h1>抽卡模拟器</h1>
@@ -43,11 +46,14 @@
       </div>
     </header>
 
+    <!-- 卡池切换标签：由 app.js 根据后端 banners 动态渲染。 -->
     <nav id="banner-tabs" class="tabs" aria-label="卡池选择"></nav>
 
+    <!-- 抽卡主界面：包含卡池信息、资源操作、保底信息和抽卡按钮。 -->
     <section id="wish-view" class="view-section">
     <section class="wish-layout">
       <section class="wish-panel" aria-labelledby="current-banner-name">
+        <!-- 当前卡池标题区：展示卡池名、限定信息和保底状态提示。 -->
         <div class="banner-heading">
           <div>
             <h2><span id="current-banner-name">加载中</span><span id="pool-type-badge" class="pool-type">卡池</span></h2>
@@ -56,11 +62,13 @@
           <div id="guarantee-badge" class="badge">保底状态</div>
         </div>
 
+        <!-- 武器池专属定轨区：切换到武器活动祈愿时显示。 -->
         <div id="path-panel" class="path-panel hidden">
           <label for="path-select">武器定轨</label>
           <select id="path-select"></select>
         </div>
 
+        <!-- 资源操作区：输入星石、查看当前池可抽次数并兑换对应缘券。 -->
         <div class="resource-panel">
           <label for="resource-input">星石数量</label>
           <div class="resource-editor">
@@ -74,6 +82,7 @@
           <button id="exchange-button" class="exchange-button" type="button">兑换缘券</button>
         </div>
 
+        <!-- 保底信息区：展示 5 星、4 星和武器命定值计数。 -->
         <div class="pity-grid">
           <div>
             <span>5 星保底</span>
@@ -89,6 +98,7 @@
           </div>
         </div>
 
+        <!-- 抽卡操作区：单抽和十连入口。 -->
         <div class="actions">
           <button id="wish-one" class="primary-button" type="button">单抽</button>
           <button id="wish-ten" class="primary-button" type="button">十连</button>
@@ -98,12 +108,14 @@
       </section>
     </section>
 
+      <!-- 页面跳转区：进入统计页或历史页。 -->
       <section class="page-jump" aria-label="页面跳转">
         <button id="open-stats" class="ghost-button nav-button" type="button">查看统计</button>
         <button id="open-history" class="ghost-button nav-button" type="button">查看历史</button>
       </section>
     </section>
 
+    <!-- 统计页：展示当前卡池累计抽数和稀有度统计。 -->
     <section id="stats-view" class="page-panel hidden" aria-labelledby="stats-title">
       <div class="section-head">
         <h2 id="stats-title">统计</h2>
@@ -112,6 +124,7 @@
       <div id="stats" class="stats-grid"></div>
     </section>
 
+    <!-- 历史页：展示当前卡池最近的抽卡记录。 -->
     <section id="history-view" class="page-panel hidden" aria-labelledby="history-title">
       <div class="section-head">
         <h2 id="history-title">历史</h2>
@@ -124,6 +137,7 @@
     </section>
   </main>
 
+  <!-- 兑换弹窗：用星石兑换当前卡池对应的缘券。 -->
   <div id="exchange-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="exchange-title">
     <div class="modal-card">
       <h2 id="exchange-title">兑换缘券</h2>
@@ -140,6 +154,7 @@
     </div>
   </div>
 
+  <!-- 补足确认弹窗：缘券不足时确认是否消耗星石补抽。 -->
   <div id="topup-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="topup-title">
     <div class="modal-card">
       <h2 id="topup-title">缘券不足</h2>
@@ -151,6 +166,7 @@
     </div>
   </div>
 
+  <!-- 抽卡结果弹窗：展示最近一次单抽或十连结果。 -->
   <div id="results-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="results-title">
     <div class="modal-card results-modal-card">
       <div class="section-head">

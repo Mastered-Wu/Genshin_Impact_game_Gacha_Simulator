@@ -1,3 +1,4 @@
+// 全局前端状态：保存后端返回的数据、当前卡池、最新结果和 UI 状态。
 const state = {
   banners: [],
   states: {},
@@ -10,6 +11,7 @@ const state = {
   activeView: "wish",
 };
 
+// 抽卡结果图片映射：后端只返回物品 id，前端按 id 选择本地占位图。
 const rewardImageById = {
   "featured-hero": "/assets/images/featured-hero.png",
   "standard-hero-a": "/assets/images/standard-hero-a.png",
@@ -32,6 +34,7 @@ const rewardImageById = {
 
 const $ = (id) => document.getElementById(id);
 
+// 页面生命周期信号：关闭页面时请求后端退出，刷新页面时再取消退出。
 function postLifecycleSignal(url) {
   if (navigator.sendBeacon) {
     navigator.sendBeacon(url, new Blob(["{}"], { type: "application/json" }));
@@ -45,6 +48,7 @@ function postLifecycleSignal(url) {
   }).catch(() => {});
 }
 
+// API 基础请求封装：所有前端操作都通过本地后端读写状态。
 async function requestJson(url, options = {}) {
   const response = await fetch(url, {
     headers: { "Content-Type": "application/json" },
@@ -53,6 +57,7 @@ async function requestJson(url, options = {}) {
   return response.json();
 }
 
+// 状态加载：从后端读取卡池、资源、保底、历史和统计。
 async function loadState() {
   setLoading(true);
   try {
@@ -71,6 +76,7 @@ async function loadState() {
   }
 }
 
+// 登录页输入处理：只允许 9 位数字 UID。
 function handleUidInput() {
   const input = $("uid-input");
   input.value = input.value.replace(/\D/g, "").slice(0, 9);
@@ -79,6 +85,7 @@ function handleUidInput() {
   $("login-message").textContent = valid ? "可以进入模拟器" : "UID 必须为 9 位数字";
 }
 
+// 进入模拟器：校验 UID，并把本次会话初始化为默认状态。
 async function enterSimulator() {
   const uid = $("uid-input").value.trim();
   if (!isValidUid(uid)) {
@@ -111,6 +118,7 @@ function isValidUid(uid) {
   return /^\d{9}$/.test(uid);
 }
 
+// 抽卡操作：发起单抽/十连，并处理缘券不足、结果弹窗和状态刷新。
 async function performWish(count, allowCurrencyTopUp = false) {
   setLoading(true);
   try {
@@ -140,6 +148,7 @@ async function performWish(count, allowCurrencyTopUp = false) {
   }
 }
 
+// 星石输入区：手动设置当前星石余额。
 async function updateResources() {
   const rawValue = $("resource-input").value.trim();
   const currency = Number.parseInt(rawValue, 10);
@@ -168,6 +177,7 @@ async function updateResources() {
   }
 }
 
+// 缘券兑换区：把星石兑换为当前卡池使用的缘券。
 async function exchangeFates() {
   const fates = Number.parseInt($("exchange-range").value, 10);
   if (!Number.isFinite(fates) || fates < 1) {
@@ -196,6 +206,7 @@ async function exchangeFates() {
   }
 }
 
+// 武器定轨区：仅武器活动祈愿使用，切换目标会清空命定值。
 async function updatePath(itemId) {
   setLoading(true);
   try {
@@ -217,6 +228,7 @@ async function updatePath(itemId) {
   }
 }
 
+// 重置操作：恢复默认资源、清空历史、保底和命定值。
 async function resetSimulator(showResult = true) {
   setLoading(true);
   try {
@@ -247,6 +259,7 @@ async function resetSimulator(showResult = true) {
   }
 }
 
+// 后端状态合并：把 API 返回的数据写回前端 state。
 function applyServerState(data) {
   state.banners = data.banners || state.banners;
   state.states = data.states || state.states;
@@ -256,6 +269,7 @@ function applyServerState(data) {
   }
 }
 
+// 加载态控制：禁用按钮/输入框，防止重复请求。
 function setLoading(loading) {
   state.loading = loading;
   [
@@ -285,6 +299,7 @@ function showMessage(message) {
   $("message").textContent = message;
 }
 
+// 当前卡池读取：后续渲染函数统一从这里拿活动卡池。
 function currentBanner() {
   return state.banners.find((banner) => banner.id === state.currentBannerId) || state.banners[0];
 }
@@ -293,6 +308,7 @@ function currentBannerState() {
   return state.states[state.currentBannerId] || {};
 }
 
+// 总渲染入口：每次状态变化后刷新所有可见板块。
 function render() {
   renderBannerOptions();
   renderCurrentBanner();
@@ -303,6 +319,7 @@ function render() {
   renderActiveView();
 }
 
+// 页面切换：在抽卡页、统计页和历史页之间切换。
 function showView(view) {
   state.activeView = view;
   renderActiveView();
@@ -322,6 +339,7 @@ function renderActiveView() {
   });
 }
 
+// 顶部资源区与抽卡可用次数：同步星石、缘券和按钮可用状态。
 function renderResources() {
   const banner = currentBanner();
   const currency = state.resources.currency || 0;
@@ -343,6 +361,7 @@ function renderResources() {
   updateExchangeRange();
 }
 
+// 卡池标签区：根据后端配置渲染角色、武器、常驻三个入口。
 function renderBannerOptions() {
   const tabs = $("banner-tabs");
   tabs.innerHTML = "";
@@ -361,6 +380,7 @@ function renderBannerOptions() {
   });
 }
 
+// 当前卡池信息区：渲染卡池名、限定列表、保底和保底状态。
 function renderCurrentBanner() {
   const banner = currentBanner();
   if (!banner) {
@@ -389,6 +409,7 @@ function renderCurrentBanner() {
   renderPathSelector(banner, bannerState);
 }
 
+// 武器定轨选择器：只在武器池显示。
 function renderPathSelector(banner, bannerState) {
   const panel = $("path-panel");
   const select = $("path-select");
@@ -416,6 +437,7 @@ function renderPathSelector(banner, bannerState) {
   select.value = bannerState.selectedPathItemId || "";
 }
 
+// 抽卡结果弹窗内容：展示最近一次抽卡返回的结果组。
 function renderResults(results) {
   const container = $("results");
   $("result-count").textContent = `${results.length} 条`;
@@ -431,6 +453,7 @@ function renderResults(results) {
   });
 }
 
+// 单个抽卡结果卡片：包含稀有度、图片、名称和保底标签。
 function resultCard(result) {
   const card = document.createElement("article");
   card.className = `result-card rarity-${result.item.rarity}`;
@@ -460,6 +483,7 @@ function resultCard(result) {
   return card;
 }
 
+// 历史页：展示当前卡池最近 80 条抽卡记录。
 function renderHistory() {
   const bannerState = currentBannerState();
   const history = bannerState.history || [];
@@ -484,6 +508,7 @@ function renderHistory() {
   });
 }
 
+// 统计页：展示当前卡池的总抽数、4/5 星和当前保底计数。
 function renderStats() {
   const bannerState = currentBannerState();
   const stats = bannerState.stats || {};
@@ -500,6 +525,7 @@ function renderStats() {
   `).join("");
 }
 
+// 文本转义：防止后端物品名中的特殊字符破坏 HTML。
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -508,6 +534,7 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;");
 }
 
+// 兑换弹窗：打开、关闭和同步滑条数值。
 function openExchangeModal() {
   updateExchangeRange();
   $("exchange-title").textContent = `兑换${fateNameForCurrentBanner()}`;
@@ -539,6 +566,7 @@ function updateExchangeRange() {
     : "星石不足 160，暂时无法兑换。";
 }
 
+// 星石补足弹窗：缘券不足时确认是否用星石补齐本次抽卡。
 function openTopUpModal(count, missingFates, requiredCurrency) {
   state.pendingTopUp = { count };
   $("topup-title").textContent = `${fateNameForCurrentBanner()}不足`;
@@ -551,6 +579,7 @@ function closeTopUpModal() {
   $("topup-modal").classList.add("hidden");
 }
 
+// 结果弹窗：展示最近一次单抽或十连。
 function openResultsModal() {
   $("results-modal").classList.remove("hidden");
 }
@@ -567,6 +596,7 @@ async function confirmTopUpWish() {
   }
 }
 
+// 卡池辅助文案：根据卡池类型决定缘券名称和标签。
 function isStandardBanner(banner) {
   return banner && banner.id === "standard";
 }
@@ -583,6 +613,7 @@ function poolTypeLabel(banner) {
   return isStandardBanner(banner) ? "常驻池" : "限定池";
 }
 
+// 键盘快捷键：D 单抽/返回/关闭，F 十连/确认。
 function handleWishShortcut(event) {
   if (event.repeat || state.loading) {
     return;
@@ -641,6 +672,7 @@ function handleWishShortcut(event) {
   }
 }
 
+// 事件绑定区：把页面按钮、输入框、弹窗和生命周期事件接到对应函数。
 $("wish-one").addEventListener("click", () => performWish(1));
 $("wish-ten").addEventListener("click", () => performWish(10));
 $("open-stats").addEventListener("click", () => showView("stats"));
