@@ -24,7 +24,23 @@
         <h1>抽卡模拟器</h1>
         <p><span id="banner-subtitle">本地规则模拟</span><span id="uid-display" class="uid-display"></span></p>
       </div>
-      <button id="reset-button" class="ghost-button" type="button">重置</button>
+      <div class="topbar-actions" aria-label="资源与操作">
+        <div class="resource-summary topbar-resources" aria-label="资源余额">
+          <span class="resource-item">
+            <img class="resource-icon" src="/assets/icons/starstone.svg" alt="" width="32" height="32">
+            <span>星石：<strong id="resource-balance">0</strong></span>
+          </span>
+          <span class="resource-item">
+            <img class="resource-icon" src="/assets/icons/fate-event.svg" alt="" width="32" height="32">
+            <span>星轨之缘：<strong id="event-fate-balance">0</strong></span>
+          </span>
+          <span class="resource-item">
+            <img class="resource-icon" src="/assets/icons/fate-standard.svg" alt="" width="32" height="32">
+            <span>恒辉之缘：<strong id="standard-fate-balance">0</strong></span>
+          </span>
+        </div>
+        <button id="reset-button" class="ghost-button" type="button">重置</button>
+      </div>
     </header>
 
     <nav id="banner-tabs" class="tabs" aria-label="卡池选择"></nav>
@@ -51,21 +67,9 @@
             <input id="resource-input" type="number" min="0" step="1" inputmode="numeric" placeholder="输入当前资源">
             <button id="resource-button" class="ghost-button" type="button">应用</button>
           </div>
-          <div class="resource-summary">
-            <span class="resource-item">
-              <img class="resource-icon" src="/assets/icons/starstone.svg" alt="" width="32" height="32">
-              <span>星石：<strong id="resource-balance">0</strong></span>
-            </span>
-            <span class="resource-item">
-              <img class="resource-icon" src="/assets/icons/fate-event.svg" alt="" width="32" height="32">
-              <span>星轨之缘：<strong id="event-fate-balance">0</strong></span>
-            </span>
-            <span class="resource-item">
-              <img class="resource-icon" src="/assets/icons/fate-standard.svg" alt="" width="32" height="32">
-              <span>恒辉之缘：<strong id="standard-fate-balance">0</strong></span>
-            </span>
-            <span class="resource-item resource-item-text">总可抽：<strong id="affordable-wishes">0</strong></span>
-            <span class="resource-item resource-item-text">160 / 抽</span>
+          <div class="resource-meta">
+            <span>当前池总可抽：<strong id="affordable-wishes">0</strong></span>
+            <span>160 星石 / 抽</span>
           </div>
           <button id="exchange-button" class="exchange-button" type="button">兑换缘券</button>
         </div>
