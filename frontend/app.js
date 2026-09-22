@@ -444,9 +444,23 @@ function renderResults(results) {
   }
   container.className = `results ${results.length === 1 ? "single-pull" : "ten-pull"}`;
   container.innerHTML = "";
-  results.forEach((result) => {
+  displayResultsFor(results).forEach((result) => {
     container.appendChild(resultCard(result));
   });
+}
+
+// 十连展示按稀有度排序，同稀有度保留原始抽出顺序；历史仍保留真实顺序。
+function displayResultsFor(results) {
+  if (results.length !== 10) {
+    return results;
+  }
+  return results
+    .map((result, index) => ({ result, index }))
+    .sort((left, right) => {
+      const rarityDiff = right.result.item.rarity - left.result.item.rarity;
+      return rarityDiff || left.index - right.index;
+    })
+    .map((entry) => entry.result);
 }
 
 // 单个抽卡结果卡片：包含稀有度、图片、名称和保底标签。
