@@ -5,6 +5,7 @@
 #include "gacha/WishEngine.h"
 
 #include <map>
+#include <memory>
 #include <string>
 
 namespace gacha {
@@ -14,6 +15,7 @@ namespace gacha {
 class AppController {
 public:
     AppController();
+    explicit AppController(RandomProvider& random);
 
     // 返回完整页面状态：卡池列表、所有卡池状态和默认当前卡池。
     std::string stateJson() const;
@@ -48,7 +50,8 @@ private:
     int eventFates_ = 0;
     int standardFates_ = 0;
     int wishCost_ = 160;
-    DefaultRandom random_;
+    std::unique_ptr<RandomProvider> ownedRandom_;
+    RandomProvider* random_ = nullptr;
     WishEngine engine_;
 };
 

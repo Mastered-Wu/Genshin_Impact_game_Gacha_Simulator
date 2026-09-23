@@ -1,6 +1,6 @@
 # 抽卡模拟器
 
-这是一个本地运行的抽卡模拟器。项目使用 C++ 实现后端规则和本地 API，前端使用纯 HTML、CSS 和 JavaScript。所有名称和物品都是原创占位内容，不使用官方名称、美术或联网数据。
+这是一个可本地运行、也可通过 Cloudflare Pages 分享访问的抽卡模拟器。项目使用 C++ 实现抽卡规则，前端使用纯 HTML、CSS 和 JavaScript；公网版通过 WebAssembly 在每位访客的浏览器内运行 C++ 规则引擎，不需要常驻服务器或 BAT。所有名称和物品都是原创占位内容，不使用官方名称、美术或联网数据。
 
 ## 功能
 
@@ -24,7 +24,20 @@
 
 ## 运行
 
-本项目是本地网页版工具，不建议开机自启或长期后台常驻。需要使用时启动服务，用完后停止即可。
+### 在线使用
+
+Cloudflare Pages 部署完成后，任何人都可以通过 Cloudflare 提供的公开网址访问。首次部署需要：
+
+1. 在 Cloudflare 创建一个 Pages 项目，选择 Direct Upload，并记下项目名称和 Cloudflare Account ID。请将生产分支设为 `main`。
+2. 在 GitHub 仓库的 `Settings > Secrets and variables > Actions` 添加 Repository secrets：`CLOUDFLARE_API_TOKEN`（Cloudflare API token 需有 Pages Edit 权限）和 `CLOUDFLARE_ACCOUNT_ID`。
+3. 在同一页面添加 Repository variable：`CLOUDFLARE_PAGES_PROJECT`，值为刚创建的 Cloudflare Pages 项目名称。
+4. 推送到 `main`，GitHub Actions 会先运行 C++ 测试并构建 WebAssembly，再将静态文件部署到 Cloudflare Pages。
+
+部署完成后，Cloudflare Pages 会显示可分享的网址，也可在 Cloudflare 控制台绑定自己的域名。抽卡和状态均在当前浏览器页面中独立运行，不会与其他访客共享。UID 只是本地页面入口校验，不会上传或用于认证；刷新页面会重置本次模拟状态。GitHub 只保存源代码和自动化工作流，不负责托管网页。
+
+### 本地使用
+
+本地模式不建议开机自启或长期后台常驻。需要使用时启动服务，用完后停止即可。
 
 最简单的方式是双击项目根目录的：
 

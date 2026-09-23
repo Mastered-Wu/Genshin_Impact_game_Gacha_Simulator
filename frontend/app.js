@@ -11,31 +11,38 @@ const state = {
   activeView: "wish",
 };
 
+let runtimeMode = "loading";
+let gachaModule = null;
+const runtimeReady = initializeRuntime();
+
 // 抽卡结果图片映射：后端只返回物品 id，前端按 id 选择本地占位图。
 const rewardImageById = {
-  "featured-hero": "/assets/images/featured-hero.png",
-  "standard-hero-a": "/assets/images/standard-hero-a.png",
-  "standard-hero-b": "/assets/images/standard-hero-b.png",
-  "standard-hero-c": "/assets/images/standard-hero-c.png",
-  "featured-four-a": "/assets/images/featured-four-a.png",
-  "featured-four-b": "/assets/images/featured-four-b.png",
-  "standard-four-hero": "/assets/images/standard-four-hero.png",
-  "standard-four-weapon": "/assets/images/standard-four-weapon.png",
-  "weapon-a": "/assets/images/weapon-a.png",
-  "weapon-b": "/assets/images/weapon-b.png",
-  "weapon-standard-a": "/assets/images/weapon-standard-a.png",
-  "weapon-standard-b": "/assets/images/weapon-standard-b.png",
-  "weapon-four-a": "/assets/images/weapon-four-a.png",
-  "weapon-four-b": "/assets/images/weapon-four-b.png",
-  "three-sword": "/assets/images/three-sword.png",
-  "three-bow": "/assets/images/three-bow.png",
-  "three-catalyst": "/assets/images/three-catalyst.png",
+  "featured-hero": "assets/images/featured-hero.png",
+  "standard-hero-a": "assets/images/standard-hero-a.png",
+  "standard-hero-b": "assets/images/standard-hero-b.png",
+  "standard-hero-c": "assets/images/standard-hero-c.png",
+  "featured-four-a": "assets/images/featured-four-a.png",
+  "featured-four-b": "assets/images/featured-four-b.png",
+  "standard-four-hero": "assets/images/standard-four-hero.png",
+  "standard-four-weapon": "assets/images/standard-four-weapon.png",
+  "weapon-a": "assets/images/weapon-a.png",
+  "weapon-b": "assets/images/weapon-b.png",
+  "weapon-standard-a": "assets/images/weapon-standard-a.png",
+  "weapon-standard-b": "assets/images/weapon-standard-b.png",
+  "weapon-four-a": "assets/images/weapon-four-a.png",
+  "weapon-four-b": "assets/images/weapon-four-b.png",
+  "three-sword": "assets/images/three-sword.png",
+  "three-bow": "assets/images/three-bow.png",
+  "three-catalyst": "assets/images/three-catalyst.png",
 };
 
 const $ = (id) => document.getElementById(id);
 
-// 页面生命周期信号：关闭页面时请求后端退出，刷新页面时再取消退出。
+// 本地 HTTP 模式保留服务生命周期信号；静态站点没有需要关闭的后端进程。
 function postLifecycleSignal(url) {
+  if (runtimeMode !== "http") {
+    return;
+  }
   if (navigator.sendBeacon) {
     navigator.sendBeacon(url, new Blob(["{}"], { type: "application/json" }));
     return;
@@ -48,8 +55,65 @@ function postLifecycleSignal(url) {
   }).catch(() => {});
 }
 
-// API 基础请求封装：所有前端操作都通过本地后端读写状态。
+async function initializeRuntime() {
+  const script = document.createElement("script");
+  script.src = new URL("gacha_wasm.js", document.baseURI).href;
+  try {
+    await new Promise((resolve, reject) => {
+      script.onload = resolve;
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+    if (typeof window.createGachaModule !== "function") {
+      throw new Error("WASM module factory is unavailable");
+    }
+    gachaModule = await window.createGachaModule();
+    runtimeMode = "wasm";
+  } catch {
+    runtimeMode = "http";
+    postLifecycleSignal("/api/cancel-shutdown");
+  }
+}
+
+function wasmRequest(url, options = {}) {
+  const path = new URL(url, document.baseURI).pathname;
+  const body = options.body ? JSON.parse(options.body) : {};
+  let raw;
+  switch (path.split("/").pop()) {
+    case "state":
+      raw = gachaModule.ccall("gacha_state", "string", [], []);
+      break;
+    case "wish":
+      raw = gachaModule.ccall("gacha_wish", "string", ["string", "number", "number"], [
+        body.bannerId,
+        body.count,
+        body.allowCurrencyTopUp ? 1 : 0,
+      ]);
+      break;
+    case "resources":
+      raw = gachaModule.ccall("gacha_resources", "string", ["number"], [body.currency]);
+      break;
+    case "exchange":
+      raw = gachaModule.ccall("gacha_exchange", "string", ["string", "number"], [body.bannerId, body.fates]);
+      break;
+    case "path":
+      raw = gachaModule.ccall("gacha_path", "string", ["string", "string"], [body.bannerId, body.itemId || ""]);
+      break;
+    case "reset":
+      raw = gachaModule.ccall("gacha_reset", "string", [], []);
+      break;
+    default:
+      throw new Error(`Unsupported local API path: ${path}`);
+  }
+  return JSON.parse(raw);
+}
+
+// 统一请求封装：公网静态站调用本地 WASM，桌面本地服务继续使用 HTTP API。
 async function requestJson(url, options = {}) {
+  await runtimeReady;
+  if (runtimeMode === "wasm") {
+    return wasmRequest(url, options);
+  }
   const response = await fetch(url, {
     headers: { "Content-Type": "application/json" },
     ...options,
@@ -69,7 +133,7 @@ async function loadState() {
     render();
     return true;
   } catch (error) {
-    showMessage("无法连接本地服务");
+    showMessage("无法加载模拟器，请刷新页面后重试");
     return false;
   } finally {
     setLoading(false);
@@ -102,7 +166,7 @@ async function enterSimulator() {
   state.activeView = "wish";
   const initialized = await resetSimulator(false);
   if (!initialized) {
-    $("login-message").textContent = "无法加载模拟器，请确认本地服务正在运行";
+    $("login-message").textContent = "无法加载模拟器，请检查网络后重试";
     $("enter-button").disabled = false;
     return;
   }
@@ -478,7 +542,7 @@ function resultCard(result) {
   art.setAttribute("aria-label", `${result.item.name}图片`);
   const imagePath = rewardImageById[result.item.id];
   if (imagePath) {
-    art.style.backgroundImage = `url("${imagePath}")`;
+    art.style.backgroundImage = `url("${new URL(imagePath, document.baseURI).href}")`;
   }
 
   const copy = document.createElement("div");
@@ -713,5 +777,4 @@ $("path-select").addEventListener("change", (event) => updatePath(event.target.v
 window.addEventListener("pagehide", () => postLifecycleSignal("/api/shutdown"));
 document.addEventListener("keydown", handleWishShortcut);
 
-postLifecycleSignal("/api/cancel-shutdown");
 handleUidInput();

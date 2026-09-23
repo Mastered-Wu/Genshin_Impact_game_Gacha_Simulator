@@ -21,6 +21,15 @@ static void default_state_contains_three_banners() {
     require(json.find("\"standard\"") != std::string::npos, "state should include standard banner");
 }
 
+static void app_controller_accepts_injected_random_provider() {
+    SequenceRandom random({0.0, 0.0});
+    AppController app(random);
+
+    auto response = app.wishJson("character-event", 1, true);
+    require(response.find("\"id\":\"featured-hero\"") != std::string::npos,
+        "injected random sequence should determine the wish result");
+}
+
 static void invalid_wish_count_returns_stable_code() {
     AppController app;
     auto json = app.wishJson("character-event", 3);
@@ -99,6 +108,7 @@ static void reset_restores_default_state() {
 int main() {
     try {
         default_state_contains_three_banners();
+        app_controller_accepts_injected_random_provider();
         invalid_wish_count_returns_stable_code();
         resources_gate_wishes_and_deduct_cost();
         exchange_adds_fates_and_wishes_use_fates_first();

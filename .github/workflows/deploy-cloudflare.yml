@@ -1,0 +1,58 @@
+name: Build and deploy simulator
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+concurrency:
+  group: cloudflare-pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Emscripten
+        uses: emscripten-core/setup-emsdk@v15
+        with:
+          version: 5.0.1
+
+      - name: Run native C++ tests
+        run: |
+          cmake -S backend -B build-native -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-native --parallel
+          ./build-native/gacha_core_tests
+          ./build-native/api_smoke_tests
+
+      - name: Build C++ WebAssembly module
+        run: |
+          emcmake cmake -S backend -B build-wasm -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-wasm --config Release --target gacha_wasm
+
+      - name: Assemble static site
+        run: |
+          mkdir -p site
+          cp -R frontend/. site/
+          cp build-wasm/gacha_wasm.js build-wasm/gacha_wasm.wasm site/
+          test -s site/index.html
+          test -s site/gacha_wasm.js
+          test -s site/gacha_wasm.wasm
+
+      - name: Deploy to Cloudflare Pages
+        if: github.event_name != 'pull_request' && vars.CLOUDFLARE_PAGES_PROJECT != ''
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: pages deploy site --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }} --branch=main

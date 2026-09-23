@@ -14,7 +14,7 @@
 
 - 所有模拟器文件必须位于 `C:\Users\27415\Desktop\抽卡模拟器`。
 - 后端逻辑必须使用 C++。
-- 前端必须使用纯 HTML/CSS/JavaScript。
+- 前端必须使用纯 HTML/CSS/JavaScript。公网静态托管时，祈愿规则仍由 C++ WebAssembly 执行，JavaScript 只负责 UI 和 API 调用。
 - 用户后续要求网页第一屏改为 UID 登录界面；输入 9 位数字 UID 后进入抽卡主界面，统计和历史分别通过主界面下方按钮进入独立页面。
 - 使用原创占位名称和资源，不使用官方游戏物品名、美术或 Logo。
 - 角色活动祈愿硬保底为 90 抽。
@@ -54,6 +54,7 @@
 - 创建 `scripts/build.ps1`：CMake 配置/构建辅助脚本。
 - 创建 `scripts/test.ps1`：CMake 配置/构建/测试辅助脚本。
 - 创建 `scripts/run.ps1`：构建并启动服务器的辅助脚本。
+- 创建 `.github/workflows/deploy-cloudflare.yml`：在 GitHub Actions 中编译 C++ WebAssembly 并部署到 Cloudflare Pages。
 
 ---
 

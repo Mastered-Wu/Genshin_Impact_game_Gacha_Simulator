@@ -4,14 +4,15 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>抽卡模拟器</title>
-  <link rel="stylesheet" href="/styles.css">
+  <base href="./">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <!-- 登录入口：只做 9 位 UID 校验，通过后进入本地模拟器。 -->
   <section id="login-screen" class="login-screen" aria-labelledby="login-title">
     <div class="login-panel">
       <h1 id="login-title">抽卡模拟器</h1>
-      <p>输入 9 位 UID 后进入本地模拟器。</p>
+      <p>输入 9 位 UID 后进入模拟器。</p>
       <label for="uid-input">用户 UID</label>
       <input id="uid-input" type="text" inputmode="numeric" maxlength="9" autocomplete="off" placeholder="请输入 9 位数字">
       <button id="enter-button" class="primary-button" type="button" disabled>进入</button>
@@ -30,16 +31,16 @@
       <div class="topbar-actions" aria-label="资源与操作">
         <div class="resource-summary topbar-resources" aria-label="资源余额">
           <span class="resource-item">
-            <img class="resource-icon" src="/assets/icons/starstone.svg" alt="" width="32" height="32">
+            <img class="resource-icon" src="assets/icons/starstone.svg" alt="" width="32" height="32">
             <label class="resource-input-label" for="resource-input">星石</label>
             <input id="resource-input" class="topbar-resource-input" type="number" min="0" step="1" inputmode="numeric" value="0">
           </span>
           <span class="resource-item">
-            <img class="resource-icon" src="/assets/icons/fate-event.svg" alt="" width="32" height="32">
+            <img class="resource-icon" src="assets/icons/fate-event.svg" alt="" width="32" height="32">
             <span>星轨之缘：<strong id="event-fate-balance">0</strong></span>
           </span>
           <span class="resource-item">
-            <img class="resource-icon" src="/assets/icons/fate-standard.svg" alt="" width="32" height="32">
+            <img class="resource-icon" src="assets/icons/fate-standard.svg" alt="" width="32" height="32">
             <span>恒辉之缘：<strong id="standard-fate-balance">0</strong></span>
           </span>
         </div>
@@ -151,6 +152,6 @@
     </div>
   </div>
 
-  <script src="/app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

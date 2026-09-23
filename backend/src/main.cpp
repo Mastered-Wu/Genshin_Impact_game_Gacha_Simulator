@@ -171,7 +171,18 @@ std::string httpResponse(int status, const std::string& statusText, const std::s
 
 }
 
-AppController::AppController() : banners_(loadBuiltInBanners()) {
+AppController::AppController()
+    : banners_(loadBuiltInBanners()),
+      ownedRandom_(std::make_unique<DefaultRandom>()),
+      random_(ownedRandom_.get()) {
+    // 每个卡池都有独立状态，角色、武器、常驻互不共享保底。
+    for (const auto& entry : banners_) {
+        states_.emplace(entry.first, WishState{});
+    }
+}
+
+AppController::AppController(RandomProvider& random)
+    : banners_(loadBuiltInBanners()), random_(&random) {
     // 每个卡池都有独立状态，角色、武器、常驻互不共享保底。
     for (const auto& entry : banners_) {
         states_.emplace(entry.first, WishState{});
@@ -268,7 +279,7 @@ std::string AppController::wishJson(const std::string& bannerId, int count, bool
     }
 
     // AppController 只做参数校验和状态保存，抽卡规则全部委托给 WishEngine。
-    auto batch = engine_.wish(*banner, *state, count, random_);
+    auto batch = engine_.wish(*banner, *state, count, *random_);
     const int fatesUsed = std::min(fateBalance, count);
     fateBalance -= fatesUsed;
     currency_ -= requiredCurrency;
