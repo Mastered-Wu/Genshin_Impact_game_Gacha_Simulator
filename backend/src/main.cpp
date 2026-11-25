@@ -15,6 +15,10 @@
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#ifdef GACHA_DESKTOP
+#include <shellapi.h>
+#include "FrontendResources.h"
+#endif
 #endif
 
 namespace gacha {
@@ -355,7 +359,12 @@ std::string AppController::resetJson() {
 }
 
 #ifndef GACHA_TESTING
+#ifdef GACHA_DESKTOP
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR commandLine, int) {
+    const bool openBrowser = std::string(commandLine).find("--no-browser") == std::string::npos;
+#else
 int main() {
+#endif
 #ifdef _WIN32
     // Windows 下使用 Winsock 创建一个仅监听 127.0.0.1 的本地 HTTP 服务。
     WSADATA data;
@@ -375,6 +384,10 @@ int main() {
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = inet_addr("127.0.0.1");
     address.sin_port = htons(18080);
+#ifdef GACHA_DESKTOP
+    // Each desktop instance gets its own free loopback port.
+    address.sin_port = 0;
+#endif
 
     if (bind(serverSocket, reinterpret_cast<sockaddr*>(&address), sizeof(address)) == SOCKET_ERROR) {
         std::cerr << "Failed to bind 127.0.0.1:18080\n";
@@ -392,6 +405,18 @@ int main() {
 
     gacha::AppController app;
     std::cout << "Gacha simulator running at http://127.0.0.1:18080\n";
+#ifdef GACHA_DESKTOP
+    int addressSize = sizeof(address);
+    getsockname(serverSocket, reinterpret_cast<sockaddr*>(&address), &addressSize);
+    const std::wstring url = L"http://127.0.0.1:" + std::to_wstring(ntohs(address.sin_port)) + L"/";
+    if (openBrowser && reinterpret_cast<INT_PTR>(
+            ShellExecuteW(nullptr, L"open", url.c_str(), nullptr, nullptr, SW_SHOWNORMAL)) <= 32) {
+        MessageBoxW(nullptr, L"Cannot open the default browser.", L"Gacha Simulator", MB_OK | MB_ICONERROR);
+        closesocket(serverSocket);
+        WSACleanup();
+        return 1;
+    }
+#endif
 
     bool shutdownScheduled = false;
     auto shutdownDeadline = std::chrono::steady_clock::time_point{};
@@ -470,7 +495,19 @@ int main() {
                 response = gacha::httpResponse(400, "Bad Request", "application/json; charset=utf-8",
                     gacha::errorJson("bad_path", "无效路径"));
             } else {
+#ifdef GACHA_DESKTOP
+                std::string content;
+                const int resourceId = frontendResourceId(filePath);
+                const auto module = GetModuleHandleW(nullptr);
+                const auto resource = FindResourceW(module, MAKEINTRESOURCEW(resourceId), MAKEINTRESOURCEW(10));
+                if (resource != nullptr) {
+                    const auto loaded = LoadResource(module, resource);
+                    const auto data = static_cast<const char*>(LockResource(loaded));
+                    if (data != nullptr) content.assign(data, SizeofResource(module, resource));
+                }
+#else
                 auto content = gacha::readTextFile(gacha::frontendRoot() / filePath.substr(1));
+#endif
                 if (content.empty()) {
                     response = gacha::httpResponse(404, "Not Found", "application/json; charset=utf-8",
                         gacha::errorJson("not_found", "资源不存在"));
@@ -480,7 +517,13 @@ int main() {
             }
         }
 
-        send(client, response.c_str(), static_cast<int>(response.size()), 0);
+        std::size_t sent = 0;
+        while (sent < response.size()) {
+            const int count = send(client, response.data() + sent,
+                static_cast<int>(response.size() - sent), 0);
+            if (count <= 0) break;
+            sent += static_cast<std::size_t>(count);
+        }
         closesocket(client);
     }
 

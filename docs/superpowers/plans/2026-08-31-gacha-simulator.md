@@ -34,6 +34,8 @@
 
 ## 文件结构
 
+Windows 单文件交付补充：使用 CMake RC 资源嵌入前端，增加 `gacha_desktop` 目标和 `scripts/package.ps1`。`scripts/test.ps1` 在规则/API 测试之外调用 `scripts/test-desktop.ps1`，验证全部内嵌文件、抽卡、历史、定轨、重置与退出；每次修改后重新生成 EXE。
+
 - 创建 `.gitignore`：忽略 `build/`、CMake 生成文件、二进制文件、日志和本地临时文件。
 - 创建 `README.md`：说明项目目的、构建、运行、测试和 Git 注意事项。
 - 创建 `configs/banners.json`：原创占位卡池名称和物品池。

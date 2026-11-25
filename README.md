@@ -12,6 +12,18 @@
 
 ## 构建
 
+Windows 单文件程序打包：
+
+```powershell
+.\scripts\package.ps1
+```
+
+生成 `dist\GachaSimulator.exe`，双击打开默认浏览器进入模拟器，不需要 BAT、源码目录或单独的网页/图片文件。可单独分发 EXE；使用者无需安装编译工具，但需要浏览器。程序只监听本机的空闲端口，关闭页面后自动退出，状态不持久保存。未签名 EXE 可能被 Windows SmartScreen 提醒。
+
+每次修改 C++、HTML、CSS、JavaScript 或资源后，重新执行上述命令更新 EXE，请先关闭正在运行的旧版本。构建不会监视编辑器自动运行；`test.ps1` 会重新打包并验证最新 EXE。生成产物不提交 Git。
+
+开发构建（包含 `build\GachaSimulator.exe` 和原有服务）：
+
 ```powershell
 .\scripts\build.ps1
 ```

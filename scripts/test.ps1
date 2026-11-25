@@ -1,7 +1,9 @@
 $ErrorActionPreference = "Stop"
 
-$generator = "Ninja"
-cmake -S backend -B build -G $generator
-cmake --build build
-& ".\build\gacha_core_tests.exe"
-& ".\build\api_smoke_tests.exe"
+& "$PSScriptRoot\package.ps1"
+$root = Split-Path $PSScriptRoot -Parent
+& "$root\build\gacha_core_tests.exe"
+if ($LASTEXITCODE -ne 0) { throw "Core tests failed." }
+& "$root\build\api_smoke_tests.exe"
+if ($LASTEXITCODE -ne 0) { throw "API tests failed." }
+& "$PSScriptRoot\test-desktop.ps1"

@@ -40,5 +40,15 @@ else()
     if (WIN32)
         target_link_libraries(api_smoke_tests PRIVATE ws2_32)
         target_link_libraries(gacha_server PRIVATE ws2_32)
+
+        enable_language(RC)
+        include(cmake/EmbedFrontend.cmake)
+        add_executable(gacha_desktop WIN32
+            src/main.cpp src/BannerRepository.cpp src/Json.cpp
+            "${resource_dir}/frontend.rc")
+        target_compile_definitions(gacha_desktop PRIVATE GACHA_DESKTOP=1)
+        target_include_directories(gacha_desktop PRIVATE "${resource_dir}")
+        target_link_libraries(gacha_desktop PRIVATE gacha_core ws2_32 shell32)
+        set_target_properties(gacha_desktop PROPERTIES OUTPUT_NAME GachaSimulator)
     endif()
 endif()
